@@ -154,6 +154,31 @@ void TIM1_Measure_PWM_Config(void);
 void TIM1_Measure_PWM_Main(void);
 
 /**
+ * @brief   TIM1 configuration function
+ * @note    Configure TIM1 to generate PWM with configurable duty cycle
+ *          and frequency. (TIM1_CH1) mapped to PE9 using AF1
+ * @param
+ * @retval
+ */
+void TIM1_Generate_PWM_Config(void);
+
+/**
+ * @brief   PWM update function
+ * @note
+ * @param
+ * @retval
+ */
+void TIM1_Update_PWM(void);
+
+/**
+ * @brief   TIM8 configuration function
+ * @note    Configure TIM8 to generate one pulse after five output cycles
+ *          from timer 1, using timer synchronization.
+ * @param
+ * @retval
+ */
+void TIM8_Generate_OnePulse_Config(void);
+/**
  * @}
  */
 /**

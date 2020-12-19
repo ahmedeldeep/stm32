@@ -125,14 +125,17 @@ int main(void)
   /* Clear PRIMASK, enable IRQs */
   __enable_irq();
 
-  /* Configure Timer 1 */
-  TIM1_Measure_PWM_Config();
+  /* Configure Timer 1 for PWM */
+  TIM1_Generate_PWM_Config();
+
+  /* Configure Timer 8 for OPM */
+  TIM8_Generate_OnePulse_Config();
 
   /* Infinite loop */
   while(1)
   {
     /* Calculates the duty cycle and frequency */
-    TIM1_Measure_PWM_Main();
+    TIM1_Update_PWM();
   }
 }
 

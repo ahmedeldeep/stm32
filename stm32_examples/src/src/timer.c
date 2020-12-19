@@ -68,6 +68,12 @@ typedef struct CC_Reg {
 #define GPIO_AFRL_AFRL0_AF3                  ((uint32_t) 0x00000003)
 
 /**
+ * @brief   AF3 PC6 pin masks
+ */
+#define GPIO_AFRL_AFRL6                      ((uint32_t) 0x0F000000)
+#define GPIO_AFRL_AFRL6_AF3                  ((uint32_t) 0x03000000)
+
+/**
  * @brief   AF1 PE9 pin masks
  */
 #define GPIO_AFRH_AFRH9                      ((uint32_t) 0x000000F0)
@@ -110,6 +116,13 @@ static CC_RegType TIM1_CC_Reg;
  */
 static float frequency = 0;
 static float duty_cycle = 0;
+
+/**
+ * @brief   Variables used for output PWM generation
+ */
+static uint16_t PWM_Output_frequency = 0;
+static uint16_t PWM_Output_duty_cycle = 0;
+
 
 /**
  * @}
@@ -485,6 +498,210 @@ void TIM1_Measure_PWM_Main(void)
     duty_cycle = 0;
   }
 }
+
+/**
+ * @brief   TIM1 configuration function
+ * @note    Configure TIM1 to generate PWM with configurable duty cycle
+ *          and frequency. (TIM1_CH1) mapped to PE9 using AF1
+ * @param
+ * @retval
+ */
+void TIM1_Generate_PWM_Config(void)
+{
+  /* GPIO Configuration */
+  /* Configure GPIO for PE9 */
+  /* Enable GPIOE clock in RCC */
+  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOEEN;
+
+  /* Select alternate function mode for PE9 */
+  GPIOE->MODER &= ~GPIO_MODER_MODER9_0;
+  GPIOE->MODER |= GPIO_MODER_MODER9_1;
+
+  /* Select no pull-up, pull-down */
+  GPIOE->PUPDR &= ~(GPIO_PUPDR_PUPDR9);
+
+  /* Select alternate function AF1 for PE9 */
+  GPIOE->AFR[1] &= ~GPIO_AFRH_AFRH9;
+  GPIOE->AFR[1] |= GPIO_AFRH_AFRH9_AF1;
+
+
+  /* Timer Configuration */
+  /* Timer 1 time base configuration */
+  /* Enable TIM1 clock */
+  RCC->APB2ENR |= RCC_APB2ENR_TIM1EN;
+
+  /* Enable Auto-reload preload */
+  TIM1->CR1 |= TIM_CR1_ARPE;
+
+  /* Set counter direction as up-counter */
+  TIM1->CR1 &= ~(TIM_CR1_DIR | TIM_CR1_CMS);
+
+  /* Select master mode Compare */
+  TIM1->CR2 |= TIM_CR2_MMS_2;
+
+  /* Master/slave mode effect is delayed to allow a perfect synchronization */
+  TIM1->SMCR |= TIM_SMCR_MSM;
+
+  /* Set timer Prescaler, bus clock = 90 MHz, fCK_PSC / (PSC[15:0] + 1)
+   * CK_CNT = 180000000 / (1799 + 1) -> 100000 Hz -> time base = 10 us */
+  TIM1->PSC = 1799;
+
+  /* Set timer auto reload value to maximum */
+  TIM1->ARR = 0xFFFF;
+
+  /* Set 50% duty cycle */
+  TIM1->CCR1 = 0xFFFF / 2;
+
+  /* Set Capture/Compare 1 as output */
+  TIM1->CCMR1 &= ~TIM_CCMR1_CC1S;
+
+  /* Output Compare 1 preload enable */
+  TIM1->CCMR1 |= TIM_CCMR1_OC1PE;
+
+  /* Select Output Compare 1 PWM mode 1
+   * TIMx_CNT < TIMx_CCR1 -> Output Active
+   * TIMx_CNT >= TIMx_CCR1 -> Output Inactive */
+  TIM1->CCMR1 |= (TIM_CCMR1_OC1M_1 | TIM_CCMR1_OC1M_2);
+
+  /* Select Capture/Compare 1 output polarity active high */
+  TIM1->CCER &= ~TIM_CCER_CC1P;
+
+  /* Initialize all the registers */
+  TIM1->EGR |= TIM_EGR_UG;
+
+  /* Enable Capture/Compare 1 output */
+  TIM1->CCER |= TIM_CCER_CC1E;
+
+  /* Enable timer main output */
+  TIM1->BDTR |= TIM_BDTR_MOE;
+
+  /* Enable TIM1 */
+  TIM1->CR1 |= TIM_CR1_CEN;
+}
+
+/**
+ * @brief   PWM update function
+ * @note
+ * @param
+ * @retval
+ */
+void TIM1_Update_PWM(void)
+{
+  /* Calculate auto reload value,
+   * update_time = (auto_reload * time_base)
+   * pwm_frequency = 1 / (auto_reload * time_base)
+   * auto_reload = 1 / (pwm_frequency * time_base) = 100000 / pwm_frequency */
+  if(0 != PWM_Output_frequency)
+  {
+    /* Calculate auto reload value */
+    uint16_t auto_reload = (uint16_t)(100000 / PWM_Output_frequency);
+
+    /* Write auto reload register */
+    TIM1->ARR = auto_reload;
+
+    /* Update CCR1 with duty cycle
+     * PWM_Output_duty_cycle = (TIM1->CCR1 / TIM1->ARR) * 100
+     * TIM1->CCR1 = (PWM_Output_duty_cycle * TIM1->ARR) / 100 */
+    /* Calculate capture compare value */
+    uint16_t capture_compare =
+        (uint16_t)((PWM_Output_duty_cycle * auto_reload) / 100);
+
+    /* Write capture compare register */
+    TIM1->CCR1 = capture_compare;
+
+    /* update timer 8 */
+    TIM8->ARR = auto_reload / 2;
+    TIM8->CCR1 = capture_compare / 2;
+  }
+  else
+  {
+    /* Do nothing */
+  }
+}
+
+/**
+ * @brief   TIM8 configuration function
+ * @note    Configure TIM8 to generate one pulse using timer synchronization.
+ * @param
+ * @retval
+ */
+void TIM8_Generate_OnePulse_Config(void)
+{
+  /* GPIO Configuration */
+  /* Configure GPIO for PC6 */
+  /* Enable GPIOE clock in RCC */
+  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOCEN;
+
+  /* Select alternate function mode for PC6 */
+  GPIOC->MODER &= ~GPIO_MODER_MODER6_0;
+  GPIOC->MODER |= GPIO_MODER_MODER6_1;
+
+  /* Select no pull-up, pull-down */
+  GPIOC->PUPDR &= ~(GPIO_PUPDR_PUPDR6);
+
+  /* Select alternate function AF3 for PC6 */
+  GPIOC->AFR[0] &= ~GPIO_AFRL_AFRL6;
+  GPIOC->AFR[0] |= GPIO_AFRL_AFRL6_AF3;
+
+
+  /* Timer Configuration */
+  /* Timer 8 time base configuration */
+  /* Enable TIM8 clock */
+  RCC->APB2ENR |= RCC_APB2ENR_TIM8EN;
+
+  /* Enable Auto-reload preload */
+  TIM8->CR1 |= TIM_CR1_ARPE;
+
+  /* Set counter direction as up-counter */
+  TIM8->CR1 &= ~(TIM_CR1_DIR | TIM_CR1_CMS);
+
+  /* Enable One pulse mode */
+  TIM8->CR1 |= TIM_CR1_OPM;
+
+  /* Set timer Prescaler, bus clock = 90 MHz, fCK_PSC / (PSC[15:0] + 1)
+   * CK_CNT = 180000000 / (1799 + 1) -> 100000 Hz -> time base = 10 us */
+  TIM8->PSC = 1799;
+
+  /* Set timer auto reload value to maximum */
+  TIM8->ARR = 0xFFFF / 2;
+
+  /* Set pulse delay after trigger */
+  TIM8->CCR1 = 0xFFFF / 4;
+
+  /* Select trigger input from TIM1 ITR0 */
+  TIM8->SMCR &= ~TIM_SMCR_TS;
+
+  /* set slave mode selection (Trigger Mode) */
+  TIM8->SMCR |= (TIM_SMCR_SMS_1 | TIM_SMCR_SMS_2);
+
+  /* Set Capture/Compare 1 as output */
+  TIM8->CCMR1 &= ~TIM_CCMR1_CC1S;
+
+  /* Output Compare 1 preload enable */
+  TIM8->CCMR1 |= TIM_CCMR1_OC1PE;
+
+  /* Select Output Compare 1 PWM mode 2
+   * TIMx_CNT < TIMx_CCR1 -> Output Active
+   * TIMx_CNT >= TIMx_CCR1 -> Output Inactive */
+  TIM8->CCMR1 |= TIM_CCMR1_OC1M;
+
+  /* Select Capture/Compare 1 output polarity active high */
+  TIM8->CCER &= ~TIM_CCER_CC1P;
+
+  /* Initialize all the registers */
+  TIM8->EGR |= TIM_EGR_UG;
+
+  /* Enable Capture/Compare 1 output */
+  TIM8->CCER |= TIM_CCER_CC1E;
+
+  /* Enable timer main output */
+  TIM8->BDTR |= TIM_BDTR_MOE;
+
+  /* Enable TIM8 */
+  TIM8->CR1 |= TIM_CR1_CEN;
+
+}
+
 /**
  * @}
  */
