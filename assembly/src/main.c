@@ -79,6 +79,7 @@ void mat_add_dsp_lib(void)
 
 void main(void)
 {
+
   mat_add_simd();
   mat_add_dsp_lib();
   mat_add_asm(matrix_1, matrix_2, matrix_add_res_asm);
