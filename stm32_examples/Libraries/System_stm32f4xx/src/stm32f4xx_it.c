@@ -44,6 +44,7 @@
 #include "dac.h"
 #include "audio.h"
 #include "IKS01A2.h"
+#include "flash.h"
 
 /** @addtogroup Template_Project
   * @{
@@ -290,7 +291,7 @@ void DMA2_Stream4_IRQHandler(void)
   */
 void DMA2_Stream5_IRQHandler(void)
 {
-  USART1_RX_DMA_IRQ_Callback();
+  FLASH_USART1_RX_DMA_IRQ_Callback();
 }
 
 /**
@@ -300,7 +301,7 @@ void DMA2_Stream5_IRQHandler(void)
   */
 void DMA2_Stream7_IRQHandler(void)
 {
-  USART1_TX_DMA_IRQ_Callback();
+  FLASH_USART1_TX_DMA_IRQ_Callback();
 }
 
 /**
@@ -310,7 +311,7 @@ void DMA2_Stream7_IRQHandler(void)
   */
 void USART1_IRQHandler(void)
 {
-  USART1_IRQ_Callback();
+  FLASH_USART1_IRQ_Callback();
 }
 
 /**

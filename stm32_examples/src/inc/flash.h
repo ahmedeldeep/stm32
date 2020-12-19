@@ -1,15 +1,15 @@
 /*******************************************************************************
- * @file    main.c
+ * @file    flash.h
  * @author  Ahmed Eldeep
  * @email   ahmed@almohandes.org
  * @website http://almohandes.org/stm32
- * @date    21.03.2018
- *          
- * @brief   main application called after startup
- * @note    
+ * @date    25.03.2019
+ *
+ * @brief   Flash Examples
+ * @note
  *
 @verbatim
-Copyright (C) Almohandes.org, 2018
+Copyright (C) Almohandes.org, 2019
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
@@ -24,11 +24,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 @endverbatim
 *******************************************************************************/
 
+/* Define to prevent recursive inclusion */
+#ifndef __INC_FLASH_H_
+#define __INC_FLASH_H_
+
+/* C++ detection */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Includes */
 #include "stm32f4xx.h"
-#include "nvic.h"
-#include "SysTick.h"
-#include "flash.h"
 
 /**
  * @addtogroup stm32_examples
@@ -36,22 +42,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main
- * @brief
+ * @addtogroup flash
  * @{
  */
 
 /**
- * @defgroup main_private_typedefs
- * @{
- */
-
-/**
- * @}
- */
-
-/**
- * @defgroup main_private_defines
+ * @defgroup flash_exported_typedefs
  * @{
  */
 
@@ -60,7 +56,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_macros
+ * @defgroup flash_exported_defines
  * @{
  */
 
@@ -69,7 +65,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_constants
+ * @defgroup flash_exported_macros
  * @{
  */
 
@@ -78,7 +74,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_variables
+ * @defgroup flash_exported_constants
  * @{
  */
 
@@ -87,64 +83,33 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_function_prototypes
+ * @defgroup flash_exported_functions
  * @{
  */
+void FLASH_USART1_GPIO_Config(void);
+void FLASH_USART1_TX_DMA_Config(void);
+void FLASH_USART1_RX_DMA_Config(void);
+void FLASH_USART1_Init(void);
+void FLASH_USART1_Enable(void);
+void FLASH_USART1_IRQ_Callback(void);
+void FLASH_USART1_TX_DMA_IRQ_Callback(void);
+void FLASH_USART1_RX_DMA_IRQ_Callback(void);
+void FLASH_Init(void);
+void FLASH_Main(void);
 
 /**
  * @}
  */
-
 /**
- * @defgroup main_private_functions
- * @{
+ * @}
  */
-
 /**
  * @}
  */
 
-/**
- * @defgroup main_exported_functions
- * @{
- */
-
-/**
- * @brief   Main function
- * @note
- * @param   none
- * @retval  none
- */
-int main(void)
-{
-  SysTick_Init();
-  NVIC_Init();
-
-  /* Clear PRIMASK, enable IRQs */
-  __enable_irq();
-
-  /* Configuration functions */
-  FLASH_USART1_GPIO_Config();
-  FLASH_USART1_Init();
-  FLASH_USART1_TX_DMA_Config();
-  FLASH_USART1_RX_DMA_Config();
-  FLASH_USART1_Enable();
-  FLASH_Init();
-
-  /* Infinite loop */
-  while(1)
-  {
-    /* Main Function */
-    FLASH_Main();
-  }
+/* C++ detection */
+#ifdef __cplusplus
 }
+#endif
 
-/**
- * @}
- */
-/**
- * @}
- */
-/**
- * @}
- */
+#endif /*__INC_FLASH_H_ */
