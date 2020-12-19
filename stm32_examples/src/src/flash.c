@@ -107,6 +107,7 @@ static char write_protect[] = "6: Write Protection";
 static char remove_write_protect[] = "7: Remove Write Protection";
 static char ob_unlock[] = "8: Option Bytes Unlock";
 static char ob_lock[] = "9: Option Bytes Lock";
+static char jump[] = "10: Direct Jump";
 static char line[] = "**********************************************";
 
 static char error_PGSERR[] = "Programming sequence error";
@@ -114,14 +115,8 @@ static char error_PGPERR[] = "Programming parallelism error";
 static char error_PGAERR[] = "Programming alignment error";
 static char error_WRPERR[] = "Write protection error";
 
-static char unlocked[] = "Flash unlock sequence executed ";
-static char locked[] = "Flash lock sequence executed ";
-static char erased[] = "Sector erase sequence executed";
-static char ob_unlocked[] = "Option Bytes unlock sequence executed ";
-static char ob_locked[] = "Option Bytes lock sequence executed ";
-static char protected[] = "Write protection sequence executed ";
-static char not_protected[] = "Remove write sequence executed ";
-static char programmed[] = "Flash programming sequence executed ";
+static char ACK[] = "ACK";
+static char NACK[] = "NACK";
 
 /**
  * @}
@@ -179,48 +174,37 @@ static void check_errors()
   if(FLASH_SR_PGSERR == (FLASH->SR & FLASH_SR_PGSERR))
   {
     /* Programming sequence error */
+    strTransmit(NACK, sizeof(NACK));
     strTransmit(error_PGSERR, sizeof(error_PGSERR));
     strTransmit(line, sizeof(line));
 
     /* Clear */
     FLASH->SR |= FLASH_SR_PGSERR;
   }
-  else
-  {
-    /* Do nothing */
-  }
-
-  if(FLASH_SR_PGPERR == (FLASH->SR & FLASH_SR_PGPERR))
+  else if(FLASH_SR_PGPERR == (FLASH->SR & FLASH_SR_PGPERR))
   {
     /* Programming parallelism error */
+    strTransmit(NACK, sizeof(NACK));
     strTransmit(error_PGPERR, sizeof(error_PGPERR));
     strTransmit(line, sizeof(line));
 
     /* Clear */
     FLASH->SR |= FLASH_SR_PGPERR;
   }
-  else
-  {
-    /* Do nothing */
-  }
-
-  if(FLASH_SR_PGAERR == (FLASH->SR & FLASH_SR_PGAERR))
+  else if(FLASH_SR_PGAERR == (FLASH->SR & FLASH_SR_PGAERR))
   {
     /* Programming alignment error */
+    strTransmit(NACK, sizeof(NACK));
     strTransmit(error_PGAERR, sizeof(error_PGAERR));
     strTransmit(line, sizeof(line));
 
     /* Clear */
     FLASH->SR |= FLASH_SR_PGAERR;
   }
-  else
-  {
-    /* Do nothing */
-  }
-
-  if(FLASH_SR_WRPERR == (FLASH->SR & FLASH_SR_WRPERR))
+  else if(FLASH_SR_WRPERR == (FLASH->SR & FLASH_SR_WRPERR))
   {
     /* Write protection error */
+    strTransmit(NACK, sizeof(NACK));
     strTransmit(error_WRPERR, sizeof(error_WRPERR));
     strTransmit(line, sizeof(line));
 
@@ -229,7 +213,8 @@ static void check_errors()
   }
   else
   {
-    /* Do nothing */
+    /* No Errors */
+    strTransmit(ACK, sizeof(ACK));
   }
 }
 
@@ -251,8 +236,6 @@ static void process_command()
       /* Write lock bit */
       FLASH->CR |= FLASH_CR_LOCK;
 
-      strTransmit(locked, sizeof(locked));
-      strTransmit(line, sizeof(line));
       break;
 
     case 2: /* Flash Unlock */
@@ -262,8 +245,6 @@ static void process_command()
       /* Write KEY2 */
       FLASH->KEYR = 0xCDEF89AB;
 
-      strTransmit(unlocked, sizeof(unlocked));
-      strTransmit(line, sizeof(line));
       break;
 
     case 3: /* Write Data */
@@ -278,21 +259,24 @@ static void process_command()
 
       /* Write data into flash */
       address = * (uint32_t *) &RxBuffer[1];
-      data = * (uint32_t *) &RxBuffer[5];
 
-      *(volatile uint32_t*)(address) = data;
-
-      /* Wait bsy flag */
-      while(0 != (FLASH->SR & FLASH_SR_BSY))
+      for(uint32_t idx = 0; idx < 4; ++idx)
       {
-        /* Waiting */
+        data = * (uint32_t *) &RxBuffer[5 + (idx * 4)];
+        *(volatile uint32_t*)(address) = data;
+
+        address += 4;
+
+        /* Wait bsy flag */
+        while(0 != (FLASH->SR & FLASH_SR_BSY))
+        {
+          /* Waiting */
+        }
       }
 
       /* Disable flash programming */
       FLASH->CR &= ~FLASH_CR_PG;
 
-      strTransmit(programmed, sizeof(programmed));
-      strTransmit(line, sizeof(line));
       break;
 
     case 4: /* Read Data */
@@ -340,8 +324,6 @@ static void process_command()
       /* Disable sector erase */
       FLASH->CR &= ~FLASH_CR_SER;
 
-      strTransmit(erased, sizeof(erased));
-      strTransmit(line, sizeof(line));
       break;
 
     case 6: /* Write Protection */
@@ -374,8 +356,6 @@ static void process_command()
         /* Waiting */
       }
 
-      strTransmit(protected, sizeof(protected));
-      strTransmit(line, sizeof(line));
       break;
 
     case 7: /* Remove Write Protection */
@@ -408,8 +388,6 @@ static void process_command()
         /* Waiting */
       }
 
-      strTransmit(not_protected, sizeof(not_protected));
-      strTransmit(line, sizeof(line));
       break;
 
     case 8: /* Option Bytes Unlock */
@@ -419,16 +397,121 @@ static void process_command()
       /* Write OPTKEY2 */
       FLASH->OPTKEYR = 0x4C5D6E7F;
 
-      strTransmit(ob_unlocked, sizeof(ob_unlocked));
-      strTransmit(line, sizeof(line));
       break;
 
     case 9: /* Option Bytes Lock */
       /* Write lock bit */
       FLASH->OPTCR |= FLASH_OPTCR_OPTLOCK;
 
-      strTransmit(ob_locked, sizeof(ob_locked));
-      strTransmit(line, sizeof(line));
+      break;
+
+    case 10: /* Jump */
+      /* Get jump address */
+      address = * (uint32_t *) &RxBuffer[1];
+      val = * (uint32_t *) address;
+
+      /* Check if it has valid stack pointer in the RAM */
+      if(0x20000000 == (val & 0x20000000))
+      {
+        /* Disable all interrupts */
+        __disable_irq();
+
+        /* Reset GPIOA and DMA2 */
+        RCC->AHB1RSTR = (RCC_AHB1RSTR_GPIOARST | RCC_AHB1RSTR_DMA2RST);
+
+        /* Release reset */
+        RCC->AHB1RSTR = 0;
+
+        /* Reset USART1 */
+        RCC->APB2RSTR = RCC_APB2RSTR_USART1RST;
+
+        /* Release reset */
+        RCC->APB2RSTR = 0;
+
+        /* Reset RCC */
+        /* Set HSION bit to the reset value */
+        RCC->CR |= RCC_CR_HSION;
+
+        /* Wait till HSI is ready */
+        while(RCC_CR_HSIRDY != (RCC_CR_HSIRDY & RCC->CR))
+        {
+          /* Waiting */
+        }
+
+        /* Set HSITRIM[4:0] bits to the reset value */
+        RCC->CR |= RCC_CR_HSITRIM_4;
+
+        /* Reset CFGR register */
+        RCC->CFGR = 0;
+
+        /* Wait till clock switch is ready and
+         * HSI oscillator selected as system clock */
+        while(0 != (RCC_CFGR_SWS & RCC->CFGR))
+        {
+          /* Waiting */
+        }
+
+        /* Clear HSEON, HSEBYP and CSSON bits */
+        RCC->CR &= ~(RCC_CR_HSEON | RCC_CR_HSEBYP | RCC_CR_CSSON);
+
+        /* Wait till HSE is disabled */
+        while(0 != (RCC_CR_HSERDY & RCC->CR))
+        {
+          /* Waiting */
+        }
+
+        /* Clear PLLON bit */
+        RCC->CR &= ~RCC_CR_PLLON;
+
+        /* Wait till PLL is disabled */
+        while(0 != (RCC_CR_PLLRDY & RCC->CR))
+        {
+          /* Waiting */
+        }
+
+        /* Reset PLLCFGR register to default value */
+        RCC->PLLCFGR = RCC_PLLCFGR_PLLM_4 | RCC_PLLCFGR_PLLN_6
+            | RCC_PLLCFGR_PLLN_7 | RCC_PLLCFGR_PLLQ_2;
+
+        /* Reset SysTick */
+        SysTick->CTRL = 0;
+        SysTick->LOAD = 0;
+        SysTick->VAL = 0;
+
+        /* Check jump address */
+        if(0x1FFF0000 == address)
+        {
+          /* Enable SYSCFG clock */
+          RCC->APB2ENR |= RCC_APB2LPENR_SYSCFGLPEN;
+
+          /* Map address 0x0 to system memory */
+          SYSCFG->MEMRMP = SYSCFG_MEMRMP_MEM_MODE_0;
+        }
+        else
+        {
+          /* Vector Table Relocation in Internal FLASH */
+          __DMB();
+          SCB->VTOR = address;
+          __DSB();
+        }
+
+        /* Set jump to the reset handler */
+        void (*jump_address)(void) = (void *)(*((uint32_t *)(address + 4)));
+
+        /* Set stack pointer */
+        __set_MSP(val);
+
+        /* Jump */
+        jump_address();
+
+
+      }
+      else
+      {
+        /* No valid stack pointer */
+        strTransmit(NACK, sizeof(NACK));
+      }
+
       break;
 
     default:
@@ -816,6 +899,7 @@ void FLASH_Main(void)
       strTransmit(remove_write_protect, sizeof(remove_write_protect));
       strTransmit(ob_unlock, sizeof(ob_unlock));
       strTransmit(ob_lock, sizeof(ob_lock));
+      strTransmit(jump, sizeof(jump));
       strTransmit(line, sizeof(line));
 
       /* Go to next state */

@@ -28,6 +28,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "stm32f4xx.h"
 #include "nvic.h"
 #include "SysTick.h"
+#include "gpio.h"
 #include "flash.h"
 
 /**
@@ -119,6 +120,7 @@ int main(void)
 {
   SysTick_Init();
   NVIC_Init();
+  GPIO_Init_LED(EVAL_ALL_LEDs);
 
   /* Clear PRIMASK, enable IRQs */
   __enable_irq();
@@ -136,6 +138,12 @@ int main(void)
   {
     /* Main Function */
     FLASH_Main();
+
+//    GPIO_TurnON_LED(EVAL_GREEN_LED);
+//    SysTick_Delay(500);
+//
+//    GPIO_TurnOFF_LED(EVAL_GREEN_LED);
+//    SysTick_Delay(500);
   }
 }
 
