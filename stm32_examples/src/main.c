@@ -84,11 +84,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @brief   Variable for storing the counter register
- */
-static uint16_t TIM8_Counter = 0;
-
-/**
  * @}
  */
 
@@ -130,14 +125,14 @@ int main(void)
   /* Clear PRIMASK, enable IRQs */
   __enable_irq();
 
-  /* Configure Timer 8 */
-  TIM8_ETR_Config();
+  /* Configure Timer 1 */
+  TIM1_Measure_PWM_Config();
 
   /* Infinite loop */
   while(1)
   {
-    /* Read periodically counter registers */
-    TIM8_Counter = TIM8->CNT;
+    /* Calculates the duty cycle and frequency */
+    TIM1_Measure_PWM_Main();
   }
 }
 

@@ -136,6 +136,24 @@ void TIM8_ETR_Config(void);
 void TIM8_IRQ_Callback(void);
 
 /**
+ * @brief   TIM1 configuration function
+ * @note    Configure TIM1 to measure the PWM duty cycle and frequency of an
+ *          input signal
+ *          input (TIM1_CH1) mapped to PE9 using AF1
+ * @param
+ * @retval
+ */
+void TIM1_Measure_PWM_Config(void);
+
+/**
+ * @brief   TIM1 measure PWM main function
+ * @note    calculates the duty cycle and frequency.
+ * @param
+ * @retval
+ */
+void TIM1_Measure_PWM_Main(void);
+
+/**
  * @}
  */
 /**

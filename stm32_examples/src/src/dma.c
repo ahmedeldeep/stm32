@@ -157,8 +157,7 @@ void DMA2_Stream0_Init()
   /* Select FIFO threshold level half FIFO */
   DMA2_Stream0->FCR |= (DMA_SxFCR_FTH_0 | DMA_SxFCR_FTH_1);
 
-  /* Select peripheral and memory incremented mode */
-  DMA2_Stream0->CR |= DMA_SxCR_PINC;
+  /* Select memory incremented mode */
   DMA2_Stream0->CR |= DMA_SxCR_MINC;
 
   /* Enable DMA transfer complete interrupt */

@@ -45,6 +45,14 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
+ * @brief   for storing the capture compare registers
+ */
+typedef struct CC_Reg {
+  uint32_t  CCR1;
+  uint32_t  CCR2;
+} CC_RegType;
+
+/**
  * @}
  */
 
@@ -58,6 +66,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #define GPIO_AFRL_AFRL0                      ((uint32_t) 0x0000000F)
 #define GPIO_AFRL_AFRL0_AF3                  ((uint32_t) 0x00000003)
+
+/**
+ * @brief   AF1 PE9 pin masks
+ */
+#define GPIO_AFRH_AFRH9                      ((uint32_t) 0x000000F0)
+#define GPIO_AFRH_AFRH9_AF1                  ((uint32_t) 0x00000010)
 
 /**
  * @}
@@ -85,6 +99,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  * @defgroup timer_private_variables
  * @{
  */
+
+/**
+ * @brief   for storing the capture compare registers
+ */
+static CC_RegType TIM1_CC_Reg;
+
+/**
+ * @brief   Variables used for PWM calculation
+ */
+static float frequency = 0;
+static float duty_cycle = 0;
 
 /**
  * @}
@@ -304,6 +329,162 @@ void TIM8_IRQ_Callback(void)
   }
 }
 
+/**
+ * @brief   TIM1 configuration function
+ * @note    Configure TIM1 to measure the PWM duty cycle and frequency of an
+ *          input signal
+ *          input (TIM1_CH1) mapped to PE9 using AF1
+ * @param
+ * @retval
+ */
+void TIM1_Measure_PWM_Config(void)
+{
+  /* GPIO Configuration */
+  /* Configure GPIO for PE9 */
+  /* Enable GPIOE clock in RCC */
+  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOEEN;
+
+  /* Select alternate function mode for PE9 */
+  GPIOE->MODER &= ~GPIO_MODER_MODER9_0;
+  GPIOE->MODER |= GPIO_MODER_MODER9_1;
+
+  /* Select no pull-up, pull-down */
+  GPIOE->PUPDR &= ~(GPIO_PUPDR_PUPDR9);
+
+  /* Select alternate function AF1 for PE9 */
+  GPIOE->AFR[1] &= ~GPIO_AFRH_AFRH9;
+  GPIOE->AFR[1] |= GPIO_AFRH_AFRH9_AF1;
+
+
+
+  /* Timer Configuration */
+  /* Timer 1 time base configuration */
+  /* Enable TIM1 clock */
+  RCC->APB2ENR |= RCC_APB2ENR_TIM1EN;
+
+  /* Set counter direction as up-counter */
+  TIM1->CR1 &= ~TIM_CR1_DIR;
+
+  /* Set timer Prescaler, bus clock = 90 MHz, fCK_PSC / (PSC[15:0] + 1)
+   * CK_CNT = 180000000 / (1799 + 1) -> 100000 Hz -> time base = 10 us */
+  TIM1->PSC = 1799;
+
+  /* Set timer auto reload value to maximum */
+  TIM1->ARR = 0xFFFF;
+
+  /* Timer 1 input channel 1 IC1 configuration */
+  /* CC1 channel is configured as input, IC1 is mapped on TI1 */
+  TIM1->CCMR1 &= ~TIM_CCMR1_CC1S;
+  TIM1->CCMR1 |= TIM_CCMR1_CC1S_0;
+
+  /* No input capture 1 prescaler */
+  /* No Input capture 1 filter */
+
+  /* Select input polarity for TI1FP1 active on rising edge */
+  TIM1->CCER &= ~TIM_CCER_CC1P;
+  TIM1->CCER &= ~TIM_CCER_CC1NP;
+
+  /* Timer 1 input channel 1 IC2 configuration */
+  /* CC2 channel is configured as input, IC2 is mapped on TI1 */
+  TIM1->CCMR1 &= ~TIM_CCMR1_CC2S;
+  TIM1->CCMR1 |= TIM_CCMR1_CC2S_1;
+
+  /* Select input polarity for TI1FP2 active on falling edge */
+  TIM1->CCER |= TIM_CCER_CC2P;
+  TIM1->CCER &= ~TIM_CCER_CC1NP;
+
+  /* Timer 1 trigger configuration */
+  /* Select Filtered Timer Input 1 (TI1FP1) trigger */
+  TIM1->SMCR &= ~TIM_SMCR_TS;
+  TIM1->SMCR |= (TIM_SMCR_TS_0 | TIM_SMCR_TS_2);
+
+  /* Select reset mode */
+  TIM1->SMCR &= ~TIM_SMCR_SMS;
+  TIM1->SMCR |= TIM_SMCR_SMS_2;
+
+
+
+  /* DMA Configuration */
+  /* DMA2 - Channel 0 - Stream 6 */
+  /* Enable DMA clock in RCC */
+  RCC->AHB1ENR |= RCC_AHB1ENR_DMA2EN;
+
+  /* Select the DMA2 channel 0 */
+  DMA2_Stream6->CR &= ~DMA_SxCR_CHSEL;
+
+  /* Select stream priority very high */
+  DMA2_Stream6->CR |= DMA_SxCR_PL;
+
+  /* Select memory and peripherals sizes word (32-bit) */
+  DMA2_Stream6->CR |= DMA_SxCR_MSIZE_1;
+  DMA2_Stream6->CR |= DMA_SxCR_PSIZE_1;
+
+  /* Select memory incremented mode */
+  DMA2_Stream6->CR |= DMA_SxCR_MINC;
+
+  /* Select circular mode */
+  DMA2_Stream6->CR |= DMA_SxCR_CIRC;
+
+  /* Select the data transfer direction peripheral to memory */
+  DMA2_Stream6->CR &= ~DMA_SxCR_DIR;
+
+  /* Set number of data items */
+  DMA2_Stream6->NDTR = 2;
+
+  /* Set the source address to the peripheral port */
+  DMA2_Stream6->PAR = (uint32_t)&TIM1->DMAR;
+
+  /* Set the destination address to the memory port */
+  DMA2_Stream6->M0AR = (uint32_t)&TIM1_CC_Reg.CCR1;
+
+
+
+  /* Configure Timer DMA related registers */
+  /* Set DMA base address to CC register */
+  TIM1->DCR &= ~TIM_DCR_DBA;
+  TIM1->DCR |= (TIM_DCR_DBA_0 | TIM_DCR_DBA_2 | TIM_DCR_DBA_3);
+
+ /* Select DMA burst length = 2 */
+  TIM1->DCR &= ~TIM_DCR_DBL;
+  TIM1->DCR |= TIM_DCR_DBL_0;
+
+  /* Enable Capture/Compare 1 DMA request enable */
+  TIM1->DIER |= TIM_DIER_CC1DE;
+
+  /* Enable DMA 2 stream 6 */
+  DMA2_Stream6->CR |= DMA_SxCR_EN;
+
+  /* Enable CC1 and CC2 */
+  TIM1->CCER |= (TIM_CCER_CC1E | TIM_CCER_CC2E);
+
+  /* Enable TIM1 */
+  TIM1->CR1 |= TIM_CR1_CEN;
+}
+
+/**
+ * @brief   TIM1 measure PWM main function
+ * @note    calculates the duty cycle and frequency.
+ * @param
+ * @retval
+ */
+void TIM1_Measure_PWM_Main(void)
+{
+  /* Avoid division by zero */
+  if (0 != TIM1_CC_Reg.CCR1)
+  {
+    /* Calculate PWM frequency = Prescaler / CC1  */
+    frequency = 100000.0 / (float)TIM1_CC_Reg.CCR1;
+
+    /* Calculate duty cycle = (Ton / period) * 100 */
+    duty_cycle = ((float)TIM1_CC_Reg.CCR2 / (float)TIM1_CC_Reg.CCR1) * 100.0;
+  }
+  else
+  {
+    /* Reset */
+    frequency = 0;
+    duty_cycle = 0;
+  }
+}
 /**
  * @}
  */
