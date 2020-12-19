@@ -84,19 +84,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @brief   Variable for storing the up counter
+ * @brief   Variable for storing the counter register
  */
-static uint16_t UpCounter = 0;
-
-/**
- * @brief   Variable for storing the down counter
- */
-static uint16_t DownCounter = 0;
-
-/**
- * @brief   Variable for storing the up down counter
- */
-static uint16_t UpDownCounter = 0;
+static uint16_t TIM8_Counter = 0;
 
 /**
  * @}
@@ -140,18 +130,14 @@ int main(void)
   /* Clear PRIMASK, enable IRQs */
   __enable_irq();
 
-  /* Configure Counters */
-  TIM6_UpCount_Config();
-  TIM3_DownCount_Config();
-  TIM4_UpDownCount_Config();
+  /* Configure Timer 8 */
+  TIM8_ETR_Config();
 
   /* Infinite loop */
   while(1)
   {
     /* Read periodically counter registers */
-    UpCounter = TIM6->CNT;
-    DownCounter = TIM3->CNT;
-    UpDownCounter = TIM4->CNT;
+    TIM8_Counter = TIM8->CNT;
   }
 }
 

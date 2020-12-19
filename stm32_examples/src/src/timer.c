@@ -54,6 +54,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
+ * @brief   AF3 PA0 pin masks
+ */
+#define GPIO_AFRL_AFRL0                      ((uint32_t) 0x0000000F)
+#define GPIO_AFRL_AFRL0_AF3                  ((uint32_t) 0x00000003)
+
+/**
  * @}
  */
 
@@ -198,6 +204,104 @@ void TIM4_IRQ_Callback(void)
 
   /* Toggle green LED */
   GPIO_Toggle_LED(EVAL_GREEN_LED);
+}
+
+/**
+ * @brief   TIM8 configuration function
+ * @note    Configure TIM8 external clock mode 1 and 2 using external trigger
+ *          input (TIM8_ETR) mapped to PA0 using AF3
+ * @param
+ * @retval
+ */
+void TIM8_ETR_Config(void)
+{
+  /* Configure GPIO for PA0 */
+  /* Enable GPIOA clock in RCC */
+  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
+
+  /* Select alternate function mode for PA0 */
+  GPIOA->MODER &= ~GPIO_MODER_MODER0_0;
+  GPIOA->MODER |= GPIO_MODER_MODER0_1;
+
+  /* Select no pull up because it has external pull down */
+  GPIOA->PUPDR &= ~(GPIO_PUPDR_PUPDR0);
+
+  /* Select alternate function AF3 */
+  GPIOA->AFR[0] &= ~GPIO_AFRL_AFRL0;
+  GPIOA->AFR[0] |= GPIO_AFRL_AFRL0_AF3;
+
+  /* Timer 8 time base configuration */
+  /* Enable TIM8 clock */
+  RCC->APB2ENR |= RCC_APB2ENR_TIM8EN;
+
+  /* Set counter direction as up-counter */
+  TIM8->CR1 &= ~TIM_CR1_DIR;
+
+  /* No need for prescaler configuration */
+
+  /* Set timer reload value */
+  TIM8->ARR = 10;
+
+  /* Enable update event interrupt */
+  TIM8->DIER |= TIM_DIER_UIE;
+
+  /* External trigger configuration */
+  /* Select external trigger polarity active high edge */
+  TIM8->SMCR &= ~TIM_SMCR_ETP;
+
+  /* Select no external trigger prescaler */
+  TIM8->SMCR &= ~TIM_SMCR_ETPS;
+
+  /* Select external trigger filter */
+  TIM8->SMCR |= TIM_SMCR_ETF;
+
+//  /* External clock mode 1 configuration */
+//  /* Reset SMS bits */
+//  TIM8->SMCR &= ~TIM_SMCR_SMS;
+//
+//  /* Select external trigger ETRF */
+//  TIM8->SMCR |= TIM_SMCR_TS;
+//
+//  /* Select slave mode as external clock mode 1 */
+//  TIM8->SMCR |= TIM_SMCR_SMS;
+
+  /* External clock mode 2 configuration */
+  TIM8->SMCR |= TIM_SMCR_ECE;
+
+  /* Enable trigger event interrupt */
+  TIM8->DIER |= TIM_DIER_TIE;
+
+  /* Enable TIM8 */
+  TIM8->CR1 |= TIM_CR1_CEN;
+}
+
+/**
+ * @brief   Timer8 IRQ callback function
+ * @note
+ * @param
+ * @retval
+ */
+void TIM8_IRQ_Callback(void)
+{
+  /* Check if update event was happened */
+  if(TIM_SR_UIF == (TIM_SR_UIF & TIM8->SR))
+  {
+    /* Clear update interrupt flag */
+    TIM8->SR &= ~TIM_SR_UIF;
+
+    /* Toggle red LED */
+    GPIO_Toggle_LED(EVAL_RED_LED);
+  }
+
+  /* Check if trigger event was happened */
+  if(TIM_SR_TIF == (TIM_SR_TIF & TIM8->SR))
+  {
+    /* Clear trigger interrupt flag */
+    TIM8->SR &= ~TIM_SR_TIF;
+
+    /* Toggle green LED */
+    GPIO_Toggle_LED(EVAL_GREEN_LED);
+  }
 }
 
 /**

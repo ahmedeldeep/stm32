@@ -66,6 +66,8 @@ void DMA2_Stream7_IRQHandler(void);
 void USART1_IRQHandler(void);
 void UART5_IRQHandler(void);
 void TIM4_IRQHandler(void);
+void TIM8_UP_TIM13_IRQHandler(void);
+void TIM8_TRG_COM_TIM14_IRQHandler(void);
 
 #ifdef __cplusplus
 }

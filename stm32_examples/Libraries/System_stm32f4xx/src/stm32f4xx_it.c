@@ -291,6 +291,25 @@ void TIM4_IRQHandler(void)
   TIM4_IRQ_Callback();
 }
 
+/**
+  * @brief  This function handles TIM8 UP and TIM13 interrupt requests.
+  * @param  None
+  * @retval None
+  */
+void TIM8_UP_TIM13_IRQHandler(void)
+{
+  TIM8_IRQ_Callback();
+}
+
+/**
+  * @brief  This function handles TIM8 TRG, COM and TIM14 interrupt requests.
+  * @param  None
+  * @retval None
+  */
+void TIM8_TRG_COM_TIM14_IRQHandler(void)
+{
+  TIM8_IRQ_Callback();
+}
 
 /**
   * @}

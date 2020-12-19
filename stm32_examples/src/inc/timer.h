@@ -119,6 +119,23 @@ void TIM4_UpDownCount_Config(void);
 void TIM4_IRQ_Callback(void);
 
 /**
+ * @brief   TIM8 configuration function
+ * @note    Configure TIM8 external clock mode 1 and 2 using external trigger
+ *          input (TIM8_ETR) mapped to PA0 using AF3
+ * @param
+ * @retval
+ */
+void TIM8_ETR_Config(void);
+
+/**
+ * @brief   Timer8 IRQ callback function
+ * @note
+ * @param
+ * @retval
+ */
+void TIM8_IRQ_Callback(void);
+
+/**
  * @}
  */
 /**
