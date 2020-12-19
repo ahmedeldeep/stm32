@@ -194,9 +194,6 @@ void SysTick_Init(void)
   {
     /* Do nothing, SysTick configuration OK */
   }
-
-  /* Give SysTick interrupts highest priority */
-  NVIC_SetPriority(SysTick_IRQn, 0);
 }
 
 /**

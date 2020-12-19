@@ -1,12 +1,12 @@
 /*******************************************************************************
- * @file    irq.h
+ * @file    exti.c
  * @author  Ahmed Eldeep
  * @email   ahmed@almohandes.org
  * @website http://almohandes.org/stm32
- * @date    31.03.2018
- *
- * @brief   Some IRQs examples using NVIC
- * @note
+ * @date    10.04.2018
+ *          
+ * @brief   EXTI examples
+ * @note    
  *
 @verbatim
 Copyright (C) Almohandes.org, 2018
@@ -24,17 +24,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 @endverbatim
 *******************************************************************************/
 
-/* Define to prevent recursive inclusion */
-#ifndef __INC_IRQ_H_
-#define __INC_IRQ_H_
-
-/* C++ detection */
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* Includes */
-#include "stm32f4xx.h"
+#include "exti.h"
 
 /**
  * @addtogroup stm32_examples
@@ -42,21 +33,13 @@ extern "C" {
  */
 
 /**
- * @addtogroup irq
+ * @defgroup exti
+ * @brief
  * @{
  */
 
 /**
- * @defgroup irq_exported_typedefs
- * @{
- */
-
-/**
- * @}
- */
-
-/**
- * @defgroup irq_exported_defines
+ * @defgroup exti_private_typedefs
  * @{
  */
 
@@ -65,7 +48,7 @@ extern "C" {
  */
 
 /**
- * @defgroup irq_exported_macros
+ * @defgroup exti_private_defines
  * @{
  */
 
@@ -74,51 +57,89 @@ extern "C" {
  */
 
 /**
- * @defgroup irq_exported_constants
+ * @defgroup exti_private_macros
  * @{
  */
-
-/**
- * @brief   LEDs IRQs
- */
-enum MyIRQs_e
-{
-  GREEN_LED_ON_IRQ = EXTI0_IRQn,    /*!< EVAL green LED ON interrupt          */
-  GREEN_LED_OFF_IRQ = EXTI1_IRQn,   /*!< EVAL green LED OFF interrupt         */
-  RED_LED_ON_IRQ = EXTI2_IRQn,      /*!< EVAL red LED ON interrupt            */
-  RED_LED_OFF_IRQ = EXTI3_IRQn      /*!< EVAL red LED OFF interrupt           */
-} MyIRQs;
 
 /**
  * @}
  */
 
 /**
- * @defgroup irq_exported_functions
+ * @defgroup exti_private_constants
  * @{
  */
 
 /**
- * @brief   NVIC IRQs initialization function
- * @note
+ * @}
+ */
+
+/**
+ * @defgroup exti_private_variables
+ * @{
+ */
+
+/**
+ * @}
+ */
+
+/**
+ * @defgroup exti_private_function_prototypes
+ * @{
+ */
+
+/**
+ * @}
+ */
+
+/**
+ * @defgroup exti_private_functions
+ * @{
+ */
+
+/**
+ * @}
+ */
+
+/**
+ * @defgroup exti_exported_functions
+ * @{
+ */
+
+/**
+ * @brief   Push button EXTI initialization function
+ * @note    On-board push button connected to PA0,
+ *          so it can use only EXTI0
  * @param   None
  * @retval  None
  */
-void IRQ_Init(void);
+void EXTI_Init_PB()
+{
+  /* Enable SYSCFG clock */
+  RCC->APB2ENR |= RCC_APB2LPENR_SYSCFGLPEN;
 
-/**
- * @}
- */
-/**
- * @}
- */
-/**
- * @}
- */
+  /* Map PA0 to EXT0 */
+  SYSCFG->EXTICR[0] |= SYSCFG_EXTICR1_EXTI0_PA;
 
-/* C++ detection */
-#ifdef __cplusplus
+  /* Enable rising edge trigger */
+  EXTI->RTSR |= EXTI_RTSR_TR0;
+
+  /* Disable falling edge trigger */
+  EXTI->FTSR &= ~(EXTI_FTSR_TR0);
+
+  /* Enable interrupt line */
+  EXTI->IMR |= EXTI_IMR_MR0;
+
+  /* Enable event line */
+  EXTI->EMR |= EXTI_EMR_MR0;
 }
-#endif
 
-#endif /*__INC_IRQ_H_ */
+/**
+ * @}
+ */
+/**
+ * @}
+ */
+/**
+ * @}
+ */

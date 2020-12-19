@@ -1,12 +1,12 @@
 /*******************************************************************************
- * @file    main.c
+ * @file    nvic.h
  * @author  Ahmed Eldeep
  * @email   ahmed@almohandes.org
  * @website http://almohandes.org/stm32
- * @date    21.03.2018
- *          
- * @brief   main application called after startup
- * @note    
+ * @date    31.03.2018
+ *
+ * @brief   NVIC examples
+ * @note
  *
 @verbatim
 Copyright (C) Almohandes.org, 2018
@@ -24,11 +24,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 @endverbatim
 *******************************************************************************/
 
+/* Define to prevent recursive inclusion */
+#ifndef __INC_NVIC_H_
+#define __INC_NVIC_H_
+
+/* C++ detection */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Includes */
-#include "nvic.h"
-#include "SysTick.h"
-#include "gpio.h"
-#include "exti.h"
+#include "stm32f4xx.h"
 
 /**
  * @addtogroup stm32_examples
@@ -36,22 +42,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main
- * @brief
+ * @addtogroup nvic
  * @{
  */
 
 /**
- * @defgroup main_private_typedefs
- * @{
- */
-
-/**
- * @}
- */
-
-/**
- * @defgroup main_private_defines
+ * @defgroup nvic_exported_typedefs
  * @{
  */
 
@@ -60,7 +56,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_macros
+ * @defgroup nvic_exported_defines
  * @{
  */
 
@@ -69,7 +65,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_constants
+ * @defgroup nvic_exported_macros
  * @{
  */
 
@@ -78,7 +74,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_variables
+ * @defgroup nvic_exported_constants
  * @{
  */
 
@@ -87,60 +83,31 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_function_prototypes
+ * @defgroup nvic_exported_functions
  * @{
  */
 
 /**
- * @}
- */
-
-/**
- * @defgroup main_private_functions
- * @{
- */
-
-/**
- * @}
- */
-
-/**
- * @defgroup main_exported_functions
- * @{
- */
-
-/**
- * @brief   Main function
+ * @brief   NVIC IRQs initialization function
  * @note
- * @param   none
- * @retval  none
+ * @param   None
+ * @retval  None
  */
-int main(void)
-{
-  SysTick_Init();
-  GPIO_Init_LED(EVAL_ALL_LEDs);
+void NVIC_Init(void);
 
-  GPIO_Init_PB();
-  EXTI_Init_PB();
-  NVIC_Init();
+/**
+ * @}
+ */
+/**
+ * @}
+ */
+/**
+ * @}
+ */
 
-  /* Clear PRIMASK, enable IRQs */
-  __enable_irq();
-
-  /* Infinite loop */
-  while(1)
-  {
-//    /* Trigger EXTI0 */
-//    EXTI->SWIER = EXTI_SWIER_SWIER0;
-  }
+/* C++ detection */
+#ifdef __cplusplus
 }
+#endif
 
-/**
- * @}
- */
-/**
- * @}
- */
-/**
- * @}
- */
+#endif /*__INC_IRQ_H_ */

@@ -1,12 +1,12 @@
 /*******************************************************************************
- * @file    irq.c
+ * @file    exti.h
  * @author  Ahmed Eldeep
  * @email   ahmed@almohandes.org
  * @website http://almohandes.org/stm32
- * @date    31.03.2018
- *          
- * @brief   Some IRQs examples using NVIC
- * @note    
+ * @date    10.04.2018
+ *
+ * @brief   EXTI examples
+ * @note
  *
 @verbatim
 Copyright (C) Almohandes.org, 2018
@@ -24,8 +24,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 @endverbatim
 *******************************************************************************/
 
+/* Define to prevent recursive inclusion */
+#ifndef __INC_EXTI_H_
+#define __INC_EXTI_H_
+
+/* C++ detection */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Includes */
-#include "irq.h"
+#include "stm32f4xx.h"
 
 /**
  * @addtogroup stm32_examples
@@ -33,22 +42,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup irq
- * @brief
+ * @addtogroup exti
  * @{
  */
 
 /**
- * @defgroup irq_private_typedefs
- * @{
- */
-
-/**
- * @}
- */
-
-/**
- * @defgroup irq_private_defines
+ * @defgroup exti_exported_typedefs
  * @{
  */
 
@@ -57,7 +56,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup irq_private_macros
+ * @defgroup exti_exported_defines
  * @{
  */
 
@@ -66,7 +65,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup irq_private_constants
+ * @defgroup exti_exported_macros
  * @{
  */
 
@@ -75,7 +74,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup irq_private_variables
+ * @defgroup exti_exported_constants
  * @{
  */
 
@@ -84,62 +83,32 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup irq_private_function_prototypes
+ * @defgroup exti_exported_functions
  * @{
  */
 
 /**
- * @}
- */
-
-/**
- * @defgroup irq_private_functions
- * @{
- */
-
-/**
- * @}
- */
-
-/**
- * @defgroup irq_exported_functions
- * @{
- */
-
-/**
- * @brief   NVIC IRQs initialization function
- * @note
+ * @brief   Push button EXTI initialization function
+ * @note    On-board push button connected to PA0,
+ *          so it can use only EXTI0
  * @param   None
  * @retval  None
  */
-void IRQ_Init(void)
-{
-  /* Set priority group to 3
-   * bits[3:0] are the sub-priority,
-   * bits[7:4] are the pre-empt priority */
-  NVIC_SetPriorityGrouping(3);
+void EXTI_Init_PB();
 
-  /* Set priority levels */
-  NVIC_SetPriority(GREEN_LED_OFF_IRQ, 1);
-  NVIC_SetPriority(RED_LED_OFF_IRQ,   2);
+/**
+ * @}
+ */
+/**
+ * @}
+ */
+/**
+ * @}
+ */
 
-  NVIC_SetPriority(GREEN_LED_ON_IRQ,  3);
-  NVIC_SetPriority(RED_LED_ON_IRQ,    4);
-
-  /* Enable interrupts at NVIC */
-  NVIC_EnableIRQ(GREEN_LED_OFF_IRQ);
-  NVIC_EnableIRQ(RED_LED_OFF_IRQ);
-
-  NVIC_EnableIRQ(GREEN_LED_ON_IRQ);
-  NVIC_EnableIRQ(RED_LED_ON_IRQ);
+/* C++ detection */
+#ifdef __cplusplus
 }
+#endif
 
-/**
- * @}
- */
-/**
- * @}
- */
-/**
- * @}
- */
+#endif /*__INC_EXTI_H_ */

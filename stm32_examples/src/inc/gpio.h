@@ -154,6 +154,14 @@ typedef enum
 void GPIO_Init_LED(Led_Type led);
 
 /**
+ * @brief   Push button initialization function
+ * @note    On-board push button connected to PA0
+ * @param   None
+ * @retval  None
+ */
+void GPIO_Init_PB();
+
+/**
  * @brief   Turns on-board LED on
  * @note    EVAL_GREEN_LED -> PG13
  * @param   Led_Type led

@@ -1,11 +1,11 @@
 /*******************************************************************************
- * @file    main.c
+ * @file    nvic.c
  * @author  Ahmed Eldeep
  * @email   ahmed@almohandes.org
  * @website http://almohandes.org/stm32
- * @date    21.03.2018
+ * @date    31.03.2018
  *          
- * @brief   main application called after startup
+ * @brief   NVIC examples
  * @note    
  *
 @verbatim
@@ -26,9 +26,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* Includes */
 #include "nvic.h"
-#include "SysTick.h"
-#include "gpio.h"
-#include "exti.h"
 
 /**
  * @addtogroup stm32_examples
@@ -36,13 +33,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main
+ * @defgroup nvic
  * @brief
  * @{
  */
 
 /**
- * @defgroup main_private_typedefs
+ * @defgroup nvic_private_typedefs
  * @{
  */
 
@@ -51,7 +48,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_defines
+ * @defgroup nvic_private_defines
  * @{
  */
 
@@ -60,7 +57,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_macros
+ * @defgroup nvic_private_macros
  * @{
  */
 
@@ -69,7 +66,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_constants
+ * @defgroup nvic_private_constants
  * @{
  */
 
@@ -78,7 +75,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_variables
+ * @defgroup nvic_private_variables
  * @{
  */
 
@@ -87,7 +84,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_function_prototypes
+ * @defgroup nvic_private_function_prototypes
  * @{
  */
 
@@ -96,7 +93,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_functions
+ * @defgroup nvic_private_functions
  * @{
  */
 
@@ -105,34 +102,29 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_exported_functions
+ * @defgroup nvic_exported_functions
  * @{
  */
 
 /**
- * @brief   Main function
+ * @brief   NVIC IRQs initialization function
  * @note
- * @param   none
- * @retval  none
+ * @param   None
+ * @retval  None
  */
-int main(void)
+void NVIC_Init(void)
 {
-  SysTick_Init();
-  GPIO_Init_LED(EVAL_ALL_LEDs);
+  /* Set priority group to 3
+   * bits[3:0] are the sub-priority,
+   * bits[7:4] are the pre-empt priority (0-15) */
+  NVIC_SetPriorityGrouping(3);
 
-  GPIO_Init_PB();
-  EXTI_Init_PB();
-  NVIC_Init();
+  /* Set priority levels */
+  NVIC_SetPriority(SysTick_IRQn, 0);
+  NVIC_SetPriority(EXTI0_IRQn, 1);
 
-  /* Clear PRIMASK, enable IRQs */
-  __enable_irq();
-
-  /* Infinite loop */
-  while(1)
-  {
-//    /* Trigger EXTI0 */
-//    EXTI->SWIER = EXTI_SWIER_SWIER0;
-  }
+  /* Enable interrupts at NVIC */
+  NVIC_EnableIRQ(EXTI0_IRQn);
 }
 
 /**

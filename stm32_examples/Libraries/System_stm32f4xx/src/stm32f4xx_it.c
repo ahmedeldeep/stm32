@@ -28,10 +28,10 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
+#include <nvic.h>
 #include "stm32f4xx_it.h"
 #include "SysTick.h"
 #include "gpio.h"
-#include "irq.h"
 
 /** @addtogroup Template_Project
   * @{
@@ -160,9 +160,20 @@ void SysTick_Handler(void)
   */
 void EXTI0_IRQHandler(void)
 {
+  /* Turn on green LED */
   GPIO_TurnON_LED(EVAL_GREEN_LED);
-  SysTick_Delay(500);
-  NVIC_SetPendingIRQ(GREEN_LED_OFF_IRQ);
+
+  /* Wait one second */
+  SysTick_Delay(1000);
+
+  /* Turn OFF green LED */
+  GPIO_TurnOFF_LED(EVAL_GREEN_LED);
+
+  /* Wait one second */
+  SysTick_Delay(100);
+
+  /* Clear pending bit */
+  EXTI->PR |= EXTI_PR_PR0;
 }
 
 /**
@@ -172,9 +183,7 @@ void EXTI0_IRQHandler(void)
   */
 void EXTI1_IRQHandler(void)
 {
-  GPIO_TurnOFF_LED(EVAL_GREEN_LED);
-  SysTick_Delay(500);
-  NVIC_SetPendingIRQ(RED_LED_ON_IRQ);
+
 }
 
 /**
@@ -184,9 +193,7 @@ void EXTI1_IRQHandler(void)
   */
 void EXTI2_IRQHandler(void)
 {
-  GPIO_TurnON_LED(EVAL_RED_LED);
-  SysTick_Delay(500);
-  NVIC_SetPendingIRQ(RED_LED_OFF_IRQ);
+
 }
 
 /**
@@ -196,9 +203,7 @@ void EXTI2_IRQHandler(void)
   */
 void EXTI3_IRQHandler(void)
 {
-  GPIO_TurnOFF_LED(EVAL_RED_LED);
-  SysTick_Delay(500);
-  NVIC_SetPendingIRQ(GREEN_LED_ON_IRQ);
+
 }
 
 /**
