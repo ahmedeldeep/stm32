@@ -28,8 +28,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "stm32f4xx.h"
 #include "rtos.h"
 
-#include "gpio.h"
-#include "can.h"
+#include "ethernet.h"
 
 
 /**
@@ -123,7 +122,6 @@ static void thread1function(void)
 
   while(1)
   {
-    CAN1_Transmit();
     RTOS_SVC_threadDelay(10);
   }
 }
@@ -139,7 +137,7 @@ static void thread2function(void)
 
   while(1)
   {
-    CAN1_Receive();
+    ETH_Receive();
     RTOS_SVC_threadDelay(1);
   }
 }
@@ -161,8 +159,13 @@ static void thread2function(void)
  */
 int main(void)
 {
-  GPIO_Init_LED(EVAL_ALL_LEDs);
-  CAN1_Init();
+
+  ETH_GPIO_Init();
+  ETH_MAC_Init();
+  ETH_DMA_TX_DescriptorList_Init();
+  ETH_DMA_RX_DescriptorList_Init();
+  ETH_DMA_Init();
+  ETH_Enable();
 
   RTOS_init();
 
