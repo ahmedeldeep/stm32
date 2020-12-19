@@ -30,8 +30,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "SysTick.h"
 #include "timer.h"
 #include "gpio.h"
-#include "exti.h"
-#include "lpwr.h"
+#include "L3GD20.h"
 
 /**
  * @addtogroup stm32_examples
@@ -121,27 +120,24 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 int main(void)
 {
   /* Disable SysTick, so we do not get interrupted */
-  //SysTick_Init();
+  SysTick_Init();
   NVIC_Init();
   GPIO_Init_LED(EVAL_ALL_LEDs);
-
-  GPIO_Init_PB();
-  EXTI_Init_PB();
 
   /* Clear PRIMASK, enable IRQs */
   __enable_irq();
 
+  /* L3GD20 sensor configuration */
+  L3GD20_Init();
+
   /* Infinite loop */
   while(1)
   {
-    /* Check if low power mode requested */
-    LPWR_Main();
-
-    /* Toggle LEDs */
-    GPIO_Toggle_LED(EVAL_ALL_LEDs);
+    /* L3GD20 main function */
+    L3GD20_Main();
 
     /* Delay */
-    for (int delay = 0; delay < 5000000; ++delay);
+    SysTick_Delay(1);
   }
 }
 

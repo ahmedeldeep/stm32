@@ -125,6 +125,8 @@ void NVIC_Init(void)
   NVIC_SetPriority(DMA1_Stream0_IRQn, 1);
   NVIC_SetPriority(DMA1_Stream7_IRQn, 1);
   NVIC_SetPriority(DMA2_Stream0_IRQn, 1);
+  NVIC_SetPriority(DMA2_Stream3_IRQn, 1);
+  NVIC_SetPriority(DMA2_Stream4_IRQn, 1);
   NVIC_SetPriority(DMA2_Stream5_IRQn, 1);
   NVIC_SetPriority(DMA2_Stream7_IRQn, 1);
   NVIC_SetPriority(USART1_IRQn, 1);
@@ -138,6 +140,8 @@ void NVIC_Init(void)
   NVIC_EnableIRQ(DMA1_Stream0_IRQn);
   NVIC_EnableIRQ(DMA1_Stream7_IRQn);
   NVIC_EnableIRQ(DMA2_Stream0_IRQn);
+  NVIC_EnableIRQ(DMA2_Stream3_IRQn);
+  NVIC_EnableIRQ(DMA2_Stream4_IRQn);
   NVIC_EnableIRQ(DMA2_Stream5_IRQn);
   NVIC_EnableIRQ(DMA2_Stream7_IRQn);
   NVIC_EnableIRQ(USART1_IRQn);

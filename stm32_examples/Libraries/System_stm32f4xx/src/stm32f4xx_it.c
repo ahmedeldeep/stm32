@@ -28,7 +28,7 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include <nvic.h>
+#include "nvic.h"
 #include "stm32f4xx_it.h"
 #include "SysTick.h"
 #include "gpio.h"
@@ -39,6 +39,7 @@
 #include "timer.h"
 #include "exti.h"
 #include "lpwr.h"
+#include "L3GD20.h"
 
 /** @addtogroup Template_Project
   * @{
@@ -177,7 +178,7 @@ void EXTI0_IRQHandler(void)
   */
 void EXTI1_IRQHandler(void)
 {
-
+  EXTI1_MEMS_INT1_Callback();
 }
 
 /**
@@ -187,7 +188,7 @@ void EXTI1_IRQHandler(void)
   */
 void EXTI2_IRQHandler(void)
 {
-
+  EXTI2_MEMS_INT2_Callback();
 }
 
 /**
@@ -243,6 +244,25 @@ void DMA2_Stream0_IRQHandler(void)
   }
 }
 
+/**
+  * @brief  This function handles DMA2 Stream3 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void DMA2_Stream3_IRQHandler(void)
+{
+  SPI5_RX_DMA_IRQ_Callback();
+}
+
+/**
+  * @brief  This function handles DMA2 Stream4 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void DMA2_Stream4_IRQHandler(void)
+{
+  SPI5_TX_DMA_IRQ_Callback();
+}
 /**
   * @brief  This function handles DMA2 Stream5 interrupt request.
   * @param  None
