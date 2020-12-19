@@ -218,6 +218,25 @@ void DMA2_Stream0_IRQHandler(void)
 }
 
 /**
+  * @brief  This function handles DMA2 Stream5 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void DMA2_Stream5_IRQHandler(void)
+{
+  USART1_RX_DMA_IRQ_Callback();
+}
+
+/**
+  * @brief  This function handles DMA2 Stream7 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void DMA2_Stream7_IRQHandler(void)
+{
+  USART1_TX_DMA_IRQ_Callback();
+}
+/**
   * @brief  This function handles USART1 interrupt request.
   * @param  None
   * @retval None

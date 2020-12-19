@@ -96,6 +96,22 @@ extern "C" {
 void USART1_GPIO_Config(void);
 
 /**
+ * @brief   Configure DMA for USART TX
+ * @note    USART1_TX -> DMA2_Stream7 (Channel 4)
+ * @param   None
+ * @retval  None
+ */
+void USART1_TX_DMA_Config(void);
+
+/**
+ * @brief   Configure DMA for USART RX
+ * @note    USART1_RX -> DMA2_Stream5 (Channel 4)
+ * @param   None
+ * @retval  None
+ */
+void USART1_RX_DMA_Config(void);
+
+/**
  * @brief   Configure USART1 for ST virtual COM port (VCP)
  * @note
  * @param   None
@@ -118,6 +134,22 @@ void USART1_Enable(void);
  * @retval  None
  */
 void USART1_IRQ_Callback(void);
+
+/**
+ * @brief   IRQ callback function
+ * @note
+ * @param   None
+ * @retval  None
+ */
+void USART1_TX_DMA_IRQ_Callback(void);
+
+/**
+ * @brief   IRQ callback function
+ * @note
+ * @param   None
+ * @retval  None
+ */
+void USART1_RX_DMA_IRQ_Callback(void);
 
 /**
  * @brief   USART1 transmit and receive data

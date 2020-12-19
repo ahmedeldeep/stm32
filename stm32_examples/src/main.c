@@ -123,6 +123,8 @@ int main(void)
 
   USART1_GPIO_Config();
   USART1_Init();
+  USART1_TX_DMA_Config();
+  USART1_RX_DMA_Config();
 
   /* Clear PRIMASK, enable IRQs */
   __enable_irq();

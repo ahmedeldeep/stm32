@@ -59,6 +59,8 @@ void EXTI1_IRQHandler(void);
 void EXTI2_IRQHandler(void);
 void EXTI3_IRQHandler(void);
 void DMA2_Stream0_IRQHandler(void);
+void DMA2_Stream5_IRQHandler(void);
+void DMA2_Stream7_IRQHandler(void);
 void USART1_IRQHandler(void);
 
 #ifdef __cplusplus
