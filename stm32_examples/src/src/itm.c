@@ -110,16 +110,16 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @brief   ITM_Printf
  * @note
- * @param   str, length
+ * @param   str
  * @retval  None
  */
-void ITM_Printf(char *str, int length)
+void ITM_Printf(char *str)
 {
   /* Check null pointers */
   if(NULL != str)
   {
     /* Start transmission to ITM port 0 */
-    for(int idx = 0; idx < (length - 1); idx++)
+    while('\0' != *str)
     {
       /* Send a char */
       ITM_SendChar(*str);
@@ -149,16 +149,16 @@ void ITM_SendChar_Port(uint8_t port, uint8_t ch)
 /**
  * @brief   ITM_Printf_Port
  * @note
- * @param   port, str, length
+ * @param   port, str
  * @retval  None
  */
-void ITM_Printf_Port(uint8_t port, char *str, int length)
+void ITM_Printf_Port(uint8_t port, char *str)
 {
   /* Check null pointers */
   if(NULL != str)
   {
-    /* Start transmission to ITM port 0 */
-    for(int idx = 0; idx < (length - 1); idx++)
+    /* Start transmission to ITM port */
+    while('\0' != *str)
     {
       /* Send a char */
       ITM_SendChar_Port(port, *str);

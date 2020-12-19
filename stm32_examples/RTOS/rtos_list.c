@@ -53,6 +53,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
+ * @brief   List end item value
+ */
+#define LIST_END_ITEM_VALUE                     ((uint32_t) 0xFFFFFFFFu)
+
+/**
  * @}
  */
 
@@ -114,12 +119,18 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 void RTOS_listInit(RTOS_list_t * pList)
 {
+  /* Check input parameters */
+  ASSERT(NULL != pList);
+
   /* Currently no threads in the list, so the index pointing to the end */
   pList->pIndex = (RTOS_listItem_t *) &pList->listEnd;
 
   /* List is empty, so the end pointing to itself */
   pList->listEnd.pNext = (RTOS_listItem_t *) &pList->listEnd;
   pList->listEnd.pPrev = (RTOS_listItem_t *) &pList->listEnd;
+
+  /* Set item value for the list end */
+  pList->listEnd.itemValue = LIST_END_ITEM_VALUE;
 
   /* Number of threads in the list is zero */
   pList->numOfItems = 0;
@@ -133,6 +144,10 @@ void RTOS_listInit(RTOS_list_t * pList)
  */
 void RTOS_listInsertEnd(RTOS_list_t * pList, RTOS_listItem_t * pNewItem)
 {
+  /* Check input parameters */
+  ASSERT(NULL != pList);
+  ASSERT(NULL != pNewItem);
+
   /* Next of the new item is the next of the current item */
   pNewItem->pNext = pList->pIndex->pNext;
 
@@ -157,6 +172,41 @@ void RTOS_listInsertEnd(RTOS_list_t * pList, RTOS_listItem_t * pNewItem)
 }
 
 /**
+ * @brief   Insert thread item by priority order
+ * @note
+ * @param   RTOS_list_t *, RTOS_listItem_t *
+ * @retval  None
+ */
+void RTOS_listInsert(RTOS_list_t * pList, RTOS_listItem_t * pNewItem)
+{
+  /* Check input parameters */
+  ASSERT(NULL != pList);
+  ASSERT(NULL != pNewItem);
+
+  /* Temp for the insert index */
+  RTOS_listItem_t * pInsertIndex = (RTOS_listItem_t *) &pList->listEnd;
+
+  /* Get insert index, find the high item value */
+  while((pInsertIndex->pNext != (RTOS_listItem_t *) &pList->listEnd)
+      && (pInsertIndex->pNext->itemValue <= pNewItem->itemValue))
+  {
+    pInsertIndex = pInsertIndex->pNext;
+  }
+
+  /* Connect the new item with insert index */
+  pNewItem->pNext = pInsertIndex->pNext;
+  pNewItem->pPrev = pInsertIndex;
+  pInsertIndex->pNext->pPrev = pNewItem;
+  pInsertIndex->pNext = pNewItem;
+
+  /* Set the list container for the new item */
+  pNewItem->pList = (void *) pList;
+
+  /* Increment number of items in the list */
+  pList->numOfItems++;
+}
+
+/**
  * @brief   Remove thread item from a list
  * @note
  * @param   RTOS_listItem_t *
@@ -164,6 +214,9 @@ void RTOS_listInsertEnd(RTOS_list_t * pList, RTOS_listItem_t * pNewItem)
  */
 void RTOS_listRemove(RTOS_listItem_t * pRemovedItem)
 {
+  /* Check input parameters */
+  ASSERT(NULL != pRemovedItem);
+
   /* Previous of the next item will be the previous of the removed item */
   pRemovedItem->pNext->pPrev = pRemovedItem->pPrev;
 

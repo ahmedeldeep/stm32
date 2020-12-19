@@ -27,6 +27,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 /* Includes */
 #include "stm32f4xx.h"
 #include "gpio.h"
+#include "itm.h"
 
 #include "rtos.h"
 
@@ -88,6 +89,15 @@ static RTOS_thread_t thread1;
 static RTOS_stack_t thread1stack;
 static RTOS_thread_t thread2;
 static RTOS_stack_t thread2stack;
+static RTOS_thread_t thread3;
+static RTOS_stack_t thread3stack;
+static RTOS_thread_t thread4;
+static RTOS_stack_t thread4stack;
+
+static RTOS_mutex_t mutex1;
+static RTOS_semaphore_t semaphore1;
+static RTOS_mailbox_t mailbox1;
+static uint32_t mailbox1buffer[2];
 
 /**
  * @}
@@ -114,15 +124,18 @@ static RTOS_stack_t thread2stack;
  */
 void thread1function(void)
 {
+
   while(1)
   {
-    GPIO_Toggle_LED(EVAL_GREEN_LED);
+    ITM_Printf("Hello World! from thread 1\n");
+    ITM_Printf("**************************\n");
 
     for (int var = 0; var < 1000000; ++var)
     {
     }
   }
 }
+
 /**
  * @brief   thread2function
  * @note
@@ -134,13 +147,55 @@ void thread2function(void)
 
   while(1)
   {
-    GPIO_Toggle_LED(EVAL_RED_LED);
+    ITM_Printf("Hello World! from thread 2\n");
+    ITM_Printf("**************************\n");
 
     for (int var = 0; var < 1000000; ++var)
     {
     }
   }
 }
+
+/**
+ * @brief   thread2function
+ * @note
+ * @param   none
+ * @retval  none
+ */
+void thread3function(void)
+{
+
+  while(1)
+  {
+    ITM_Printf("Hello World! from thread 3\n");
+    ITM_Printf("**************************\n");
+
+    for (int var = 0; var < 1000000; ++var)
+    {
+    }
+  }
+}
+
+/**
+ * @brief   thread2function
+ * @note
+ * @param   none
+ * @retval  none
+ */
+void thread4function(void)
+{
+
+  while(1)
+  {
+    ITM_Printf("Hello World! from thread 4\n");
+    ITM_Printf("**************************\n");
+
+    for (int var = 0; var < 1000000; ++var)
+    {
+    }
+  }
+}
+
 /**
  * @}
  */
@@ -158,13 +213,18 @@ void thread2function(void)
  */
 int main(void)
 {
-  GPIO_Init_LED(EVAL_ALL_LEDs);
-
-
   RTOS_init();
 
   RTOS_SVC_threadCreate(&thread1, &thread1stack, 1, thread1function);
   RTOS_SVC_threadCreate(&thread2, &thread2stack, 1, thread2function);
+  RTOS_SVC_threadCreate(&thread3, &thread3stack, 1, thread3function);
+  RTOS_SVC_threadCreate(&thread4, &thread4stack, 1, thread4function);
+
+
+  RTOS_SVC_mutexCreate(&mutex1, 1);
+  RTOS_SVC_semaphoreCreate(&semaphore1, 1);
+  RTOS_SVC_mailboxCreate(&mailbox1, mailbox1buffer, 2, 4);
+
 
   RTOS_SVC_schedulerStart();
 

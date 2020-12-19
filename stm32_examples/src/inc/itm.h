@@ -92,7 +92,7 @@ extern "C" {
  * @param   str, length
  * @retval  None
  */
-void ITM_Printf(char *str, int length);
+void ITM_Printf(char *str);
 
 /**
  * @brief   SendChar
@@ -108,7 +108,7 @@ void ITM_SendChar_Port(uint8_t port, uint8_t ch);
  * @param   port, str, length
  * @retval  None
  */
-void ITM_Printf_Port(uint8_t port, char *str, int length);
+void ITM_Printf_Port(uint8_t port, char *str);
 
 /**
  * @}
