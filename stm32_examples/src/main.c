@@ -30,6 +30,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "SysTick.h"
 #include "timer.h"
 #include "gpio.h"
+#include "exti.h"
+#include "lpwr.h"
 
 /**
  * @addtogroup stm32_examples
@@ -118,24 +120,28 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 int main(void)
 {
-  SysTick_Init();
+  /* Disable SysTick, so we do not get interrupted */
+  //SysTick_Init();
   NVIC_Init();
   GPIO_Init_LED(EVAL_ALL_LEDs);
+
+  GPIO_Init_PB();
+  EXTI_Init_PB();
 
   /* Clear PRIMASK, enable IRQs */
   __enable_irq();
 
-  /* Configure Timer 1 for PWM */
-  TIM1_Generate_PWM_Config();
-
-  /* Configure Timer 8 for OPM */
-  TIM8_Generate_OnePulse_Config();
-
   /* Infinite loop */
   while(1)
   {
-    /* Calculates the duty cycle and frequency */
-    TIM1_Update_PWM();
+    /* Check if low power mode requested */
+    LPWR_Main();
+
+    /* Toggle LEDs */
+    GPIO_Toggle_LED(EVAL_ALL_LEDs);
+
+    /* Delay */
+    for (int delay = 0; delay < 5000000; ++delay);
   }
 }
 

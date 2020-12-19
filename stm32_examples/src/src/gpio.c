@@ -195,6 +195,10 @@ void GPIO_TurnON_LED(Led_Type led)
       GPIOG->BSRRL = GPIO_BSRR_BS_14;
       break;
 
+    case EVAL_ALL_LEDs:
+      GPIOG->BSRRL = (GPIO_BSRR_BS_13 | GPIO_BSRR_BS_14);
+      break;
+
     case EVAL_GREEN_LED_BITBAND:
       GREEN_LED_BITBAND = 1;
       break;
@@ -223,6 +227,10 @@ void GPIO_TurnOFF_LED(Led_Type led)
       GPIOG->BSRRH = GPIO_BSRR_BS_14;
       break;
 
+    case EVAL_ALL_LEDs:
+      GPIOG->BSRRH = (GPIO_BSRR_BS_13 | GPIO_BSRR_BS_14);
+      break;
+
     case EVAL_GREEN_LED_BITBAND:
       GREEN_LED_BITBAND = 0;
       break;
@@ -249,6 +257,10 @@ void GPIO_Toggle_LED(Led_Type led)
 
     case EVAL_RED_LED:
       GPIOG->ODR ^= GPIO_ODR_ODR_14;
+      break;
+
+    case EVAL_ALL_LEDs:
+      GPIOG->ODR ^= (GPIO_ODR_ODR_13 | GPIO_ODR_ODR_14);
       break;
 
     default:

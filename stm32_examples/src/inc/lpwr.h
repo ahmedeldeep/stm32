@@ -1,11 +1,11 @@
 /*******************************************************************************
- * @file    exti.h
+ * @file    lpwr.h
  * @author  Ahmed Eldeep
  * @email   ahmed@almohandes.org
  * @website http://almohandes.org/stm32
- * @date    10.04.2018
+ * @date    18.10.2018
  *
- * @brief   EXTI examples
+ * @brief   Low power example
  * @note
  *
 @verbatim
@@ -25,8 +25,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
 
 /* Define to prevent recursive inclusion */
-#ifndef __INC_EXTI_H_
-#define __INC_EXTI_H_
+#ifndef __INC_LPWR_H_
+#define __INC_LPWR_H_
 
 /* C++ detection */
 #ifdef __cplusplus
@@ -42,21 +42,12 @@ extern "C" {
  */
 
 /**
- * @addtogroup exti
+ * @addtogroup lpwr
  * @{
  */
 
 /**
- * @defgroup exti_exported_typedefs
- * @{
- */
-
-/**
- * @}
- */
-
-/**
- * @defgroup exti_exported_defines
+ * @defgroup lpwr_exported_typedefs
  * @{
  */
 
@@ -65,7 +56,7 @@ extern "C" {
  */
 
 /**
- * @defgroup exti_exported_macros
+ * @defgroup lpwr_exported_defines
  * @{
  */
 
@@ -74,7 +65,7 @@ extern "C" {
  */
 
 /**
- * @defgroup exti_exported_constants
+ * @defgroup lpwr_exported_macros
  * @{
  */
 
@@ -83,26 +74,21 @@ extern "C" {
  */
 
 /**
- * @defgroup exti_exported_functions
+ * @defgroup lpwr_exported_constants
  * @{
  */
 
 /**
- * @brief   Push button EXTI initialization function
- * @note    On-board push button connected to PA0,
- *          so it can use only EXTI0
- * @param   None
- * @retval  None
+ * @}
  */
-void EXTI_Init_PB();
 
 /**
-* @brief   Callback function
-* @note    Called when PB is pressed
-* @param   None
-* @retval  None
-*/
-void EXTI0_PB_IRQ_Callback();
+ * @defgroup lpwr_exported_functions
+ * @{
+ */
+
+void LPWR_Main(void);
+void LPWR_PB_IRQ_Callback(void);
 
 /**
  * @}
@@ -119,4 +105,4 @@ void EXTI0_PB_IRQ_Callback();
 }
 #endif
 
-#endif /*__INC_EXTI_H_ */
+#endif /*__INC_LPWR_H_ */

@@ -37,6 +37,8 @@
 #include "LIN_Slave.h"
 #include "rcc.h"
 #include "timer.h"
+#include "exti.h"
+#include "lpwr.h"
 
 /** @addtogroup Template_Project
   * @{
@@ -165,7 +167,7 @@ void SysTick_Handler(void)
   */
 void EXTI0_IRQHandler(void)
 {
-  RCC_SystemReset();
+  LPWR_PB_IRQ_Callback();
 }
 
 /**

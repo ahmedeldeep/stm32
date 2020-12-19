@@ -26,6 +26,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* Includes */
 #include "exti.h"
+#include "gpio.h"
 
 /**
  * @addtogroup stm32_examples
@@ -116,7 +117,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 void EXTI_Init_PB()
 {
   /* Enable SYSCFG clock */
-  RCC->APB2ENR |= RCC_APB2LPENR_SYSCFGLPEN;
+  RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
 
   /* Map PA0 to EXT0 */
   SYSCFG->EXTICR[0] |= SYSCFG_EXTICR1_EXTI0_PA;
@@ -132,6 +133,20 @@ void EXTI_Init_PB()
 
   /* Enable event line */
   EXTI->EMR |= EXTI_EMR_MR0;
+}
+
+/**
+ * @brief   Callback function
+ * @note    Called when PB is pressed
+ * @param   None
+ * @retval  None
+ */
+void EXTI0_PB_IRQ_Callback()
+{
+  GPIO_Toggle_LED(EVAL_RED_LED);
+
+  /* Clear pending bit */
+  EXTI->PR |= EXTI_PR_PR0;
 }
 
 /**
