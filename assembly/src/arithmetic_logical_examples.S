@@ -5,6 +5,8 @@
 .thumb
 
 
+.global mat_add_asm
+
 .data
     res: .quad 0x0000000000000000
     matrix_add_res: .byte 0x00, 0x00, 0x00, 0x00
@@ -12,6 +14,7 @@
                     .byte 0x00, 0x00, 0x00, 0x00
                     .byte 0x00, 0x00, 0x00, 0x00
 .text
+
     num_01: .quad 0xAA55AA66FFFFFFFF
     num_02: .quad 0xAA77AA77FFFFFFFF
 
@@ -84,6 +87,21 @@ count_ones_loop:
     adc r2, #0                     /* add r2 + carry flag */
     b count_ones_start             /* loop */
 
+.type mat_add_asm, %function
+mat_add_asm:
+    /* r0 -> address to matrix_1
+       r1 -> address to matrix_2
+       r2 -> address to matrix_res */
+    push {r4-r6, lr}
+    movs r4, #16        /* loop index */
 
-
+mat_add_loop:
+    sub r4, #4               /* decrement the index by 4 */
+    ldr r5, [r0, r4]         /* get one raw from matrix_1 */
+    ldr r6, [r1, r4]         /* get one raw from matrix_2 */
+    uadd8 r3, r5, r6         /* unsigned add 4 bytes in paraller (SIMD) */
+    str r3, [r2, r4]         /* store the results */
+    cmp r4, #0
+    bne mat_add_loop         /* compare and branch if non zero */
+    pop {r4-r6, pc}          /* return */
 
