@@ -1,12 +1,12 @@
 /*******************************************************************************
- * @file    nvic.c
+ * @file    memcpy.h
  * @author  Ahmed Eldeep
  * @email   ahmed@almohandes.org
  * @website http://almohandes.org/stm32
- * @date    31.03.2018
- *          
- * @brief   NVIC examples
- * @note    
+ * @date    22.04.2018
+ *
+ * @brief   Copy data between two memory buffers
+ * @note
  *
 @verbatim
 Copyright (C) Almohandes.org, 2018
@@ -24,8 +24,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 @endverbatim
 *******************************************************************************/
 
+/* Define to prevent recursive inclusion */
+#ifndef __INC_MEMCPY_H_
+#define __INC_MEMCPY_H_
+
+/* C++ detection */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Includes */
-#include "nvic.h"
+#include "stm32f4xx.h"
 
 /**
  * @addtogroup stm32_examples
@@ -33,108 +42,82 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup nvic
- * @brief
+ * @addtogroup memcpy
  * @{
  */
 
 /**
- * @defgroup nvic_private_typedefs
+ * @defgroup memcpy_exported_typedefs
  * @{
  */
 
 /**
- * @}
+ * @brief   Return type
  */
-
-/**
- * @defgroup nvic_private_defines
- * @{
- */
-
-/**
- * @}
- */
-
-/**
- * @defgroup nvic_private_macros
- * @{
- */
-
-/**
- * @}
- */
-
-/**
- * @defgroup nvic_private_constants
- * @{
- */
-
-/**
- * @}
- */
-
-/**
- * @defgroup nvic_private_variables
- * @{
- */
-
-/**
- * @}
- */
-
-/**
- * @defgroup nvic_private_function_prototypes
- * @{
- */
-
-/**
- * @}
- */
-
-/**
- * @defgroup nvic_private_functions
- * @{
- */
-
-/**
- * @}
- */
-
-/**
- * @defgroup nvic_exported_functions
- * @{
- */
-
-/**
- * @brief   NVIC IRQs initialization function
- * @note
- * @param   None
- * @retval  None
- */
-void NVIC_Init(void)
+typedef enum
 {
-  /* Set priority group to 3
-   * bits[3:0] are the sub-priority,
-   * bits[7:4] are the pre-empt priority (0-15) */
-  NVIC_SetPriorityGrouping(3);
+  RETURN_STATUS_OK = 0u,
+  RETURN_STATUS_NOT_OK = 1u
+} ReturnStatus_Type;
 
-  /* Set priority levels */
-  NVIC_SetPriority(SysTick_IRQn, 0);
-  NVIC_SetPriority(EXTI0_IRQn, 1);
-  NVIC_SetPriority(DMA2_Stream0_IRQn, 1);
+/**
+ * @}
+ */
 
-  /* Enable interrupts at NVIC */
-  NVIC_EnableIRQ(EXTI0_IRQn);
-  NVIC_EnableIRQ(DMA2_Stream0_IRQn);
+/**
+ * @defgroup memcpy_exported_defines
+ * @{
+ */
+
+/**
+ * @}
+ */
+
+/**
+ * @defgroup memcpy_exported_macros
+ * @{
+ */
+
+/**
+ * @}
+ */
+
+/**
+ * @defgroup memcpy_exported_constants
+ * @{
+ */
+
+/**
+ * @}
+ */
+
+/**
+ * @defgroup memcpy_exported_functions
+ * @{
+ */
+
+/**
+ * @brief   Copy data between two memory buffers
+ * @note
+ * @param   src, dst, size
+ * @retval  RETURN_STATUS_OK, RETURN_STATUS_NOT_OK
+ */
+ReturnStatus_Type memcpy32(const uint32_t * src,
+    uint32_t * dst, const uint32_t size);
+
+/**
+ * @}
+ */
+/**
+ * @}
+ */
+/**
+ * @}
+ */
+
+/* C++ detection */
+#ifdef __cplusplus
 }
+#endif
 
-/**
- * @}
- */
-/**
- * @}
- */
-/**
- * @}
- */
+#endif /*__INC_MEMCPY_H_ */

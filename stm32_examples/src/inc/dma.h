@@ -1,12 +1,12 @@
 /*******************************************************************************
- * @file    nvic.c
+ * @file    dma.h
  * @author  Ahmed Eldeep
  * @email   ahmed@almohandes.org
  * @website http://almohandes.org/stm32
- * @date    31.03.2018
- *          
- * @brief   NVIC examples
- * @note    
+ * @date    22.04.2018
+ *
+ * @brief   DMA examples
+ * @note
  *
 @verbatim
 Copyright (C) Almohandes.org, 2018
@@ -24,8 +24,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 @endverbatim
 *******************************************************************************/
 
+/* Define to prevent recursive inclusion */
+#ifndef __INC_DMA_H_
+#define __INC_DMA_H_
+
+/* C++ detection */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Includes */
-#include "nvic.h"
+#include "stm32f4xx.h"
 
 /**
  * @addtogroup stm32_examples
@@ -33,22 +42,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup nvic
- * @brief
+ * @addtogroup dma
  * @{
  */
 
 /**
- * @defgroup nvic_private_typedefs
- * @{
- */
-
-/**
- * @}
- */
-
-/**
- * @defgroup nvic_private_defines
+ * @defgroup dma_exported_typedefs
  * @{
  */
 
@@ -57,7 +56,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup nvic_private_macros
+ * @defgroup dma_exported_defines
  * @{
  */
 
@@ -66,7 +65,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup nvic_private_constants
+ * @defgroup dma_exported_macros
  * @{
  */
 
@@ -75,7 +74,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup nvic_private_variables
+ * @defgroup dma_exported_constants
  * @{
  */
 
@@ -84,57 +83,49 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup nvic_private_function_prototypes
+ * @defgroup dma_exported_functions
  * @{
  */
 
 /**
- * @}
+ * @brief   DMA2 Stream0 initialization function
+ * @note    Used for data transfer between two memory buffers
+ * @param   None
+ * @retval  None
  */
+void DMA2_Stream0_Init();
 
 /**
- * @defgroup nvic_private_functions
- * @{
+ * @brief   DMA2 Stream0 set addresses function
+ * @note    Sets the addresses of the memory and peripheral ports,
+ *          and number of data items to be transfered.
+ * @param   src, dst, size
+ * @retval  None
  */
+void DMA2_Stream0_Set_Addresses(const uint32_t * src,
+    uint32_t * dst, const uint32_t size);
 
 /**
- * @}
- */
-
-/**
- * @defgroup nvic_exported_functions
- * @{
- */
-
-/**
- * @brief   NVIC IRQs initialization function
+ * @brief   DMA2 Stream0 enable function
  * @note
  * @param   None
  * @retval  None
  */
-void NVIC_Init(void)
-{
-  /* Set priority group to 3
-   * bits[3:0] are the sub-priority,
-   * bits[7:4] are the pre-empt priority (0-15) */
-  NVIC_SetPriorityGrouping(3);
+void DMA2_Stream0_Enable();
 
-  /* Set priority levels */
-  NVIC_SetPriority(SysTick_IRQn, 0);
-  NVIC_SetPriority(EXTI0_IRQn, 1);
-  NVIC_SetPriority(DMA2_Stream0_IRQn, 1);
+/**
+ * @}
+ */
+/**
+ * @}
+ */
+/**
+ * @}
+ */
 
-  /* Enable interrupts at NVIC */
-  NVIC_EnableIRQ(EXTI0_IRQn);
-  NVIC_EnableIRQ(DMA2_Stream0_IRQn);
+/* C++ detection */
+#ifdef __cplusplus
 }
+#endif
 
-/**
- * @}
- */
-/**
- * @}
- */
-/**
- * @}
- */
+#endif /*__INC_DMA_H_ */

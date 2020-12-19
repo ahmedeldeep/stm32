@@ -160,20 +160,7 @@ void SysTick_Handler(void)
   */
 void EXTI0_IRQHandler(void)
 {
-  /* Turn on green LED */
-  GPIO_TurnON_LED(EVAL_GREEN_LED);
 
-  /* Wait one second */
-  SysTick_Delay(1000);
-
-  /* Turn OFF green LED */
-  GPIO_TurnOFF_LED(EVAL_GREEN_LED);
-
-  /* Wait one second */
-  SysTick_Delay(100);
-
-  /* Clear pending bit */
-  EXTI->PR |= EXTI_PR_PR0;
 }
 
 /**
@@ -204,6 +191,29 @@ void EXTI2_IRQHandler(void)
 void EXTI3_IRQHandler(void)
 {
 
+}
+
+/**
+  * @brief  This function handles DMA2 Stream0 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void DMA2_Stream0_IRQHandler(void)
+{
+  /* Check transfer complete flag */
+  if(DMA_LISR_TCIF0 == (DMA_LISR_TCIF0 & DMA2->LISR))
+  {
+    /* DMA transfer is complete, turn off green LED */
+    GPIO_TurnOFF_LED(EVAL_GREEN_LED);
+
+    /* Clear transfer complete flag */
+    DMA2->LIFCR = DMA_LIFCR_CTCIF0;
+  }
+  else
+  {
+    /* Turn on red LED, this interrupt is not handled */
+    GPIO_TurnON_LED(EVAL_RED_LED);
+  }
 }
 
 /**
