@@ -29,7 +29,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "nvic.h"
 #include "SysTick.h"
 #include "gpio.h"
-#include "flash.h"
+#include "mpu.h"
 
 /**
  * @addtogroup stm32_examples
@@ -125,26 +125,21 @@ int main(void)
   /* Clear PRIMASK, enable IRQs */
   __enable_irq();
 
-  /* Configuration functions */
-  FLASH_USART1_GPIO_Config();
-  FLASH_USART1_Init();
-  FLASH_USART1_TX_DMA_Config();
-  FLASH_USART1_RX_DMA_Config();
-  FLASH_USART1_Enable();
-  FLASH_Init();
+  MPU_Init();
+
+  /* Enable port A clock */
+  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
 
   /* Infinite loop */
   while(1)
   {
-    /* Main Function */
-    FLASH_Main();
+    GPIO_TurnON_LED(EVAL_GREEN_LED);
+    SysTick_Delay(500);
 
-//    GPIO_TurnON_LED(EVAL_GREEN_LED);
-//    SysTick_Delay(500);
-//
-//    GPIO_TurnOFF_LED(EVAL_GREEN_LED);
-//    SysTick_Delay(500);
+    GPIO_TurnOFF_LED(EVAL_GREEN_LED);
+    SysTick_Delay(500);
   }
+
 }
 
 /**
