@@ -1,27 +1,25 @@
-/*******************************************************************************
+/** ****************************************************************************
  * @file    gpio.c
- * @author  Ahmed Eldeep
- * @email   ahmed@almohandes.org
- * @website http://almohandes.org/stm32
+ * @author  Ahmed Eldeep <ahmed@almohandes.org>
  * @date    25.03.2018
- *          
- * @brief   Some examples on how to use STM32 GPIOs
- * @note    
+ * @brief   Some examples on how to use STM32 GPIOs.
  *
-@verbatim
-Copyright (C) Almohandes.org, 2018
-
-This program is free software: you can redistribute it and/or modify it under
-the terms of the GNU General Public License as published by the Free Software
-Foundation, either version 3 of the License, or any later version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with
-this program.  If not, see <http://www.gnu.org/licenses/>.
-@endverbatim
+ * @verbatim
+ * @endverbatim
+ *
+ *
+ * @attention
+ * Copyright (C) Almohandes.org, 2018
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
 
 /* Includes */
@@ -33,22 +31,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup gpio
- * @brief
+ * @addtogroup gpio
+ * @brief      Some examples on how to use STM32 GPIOs
  * @{
  */
 
 /**
- * @defgroup gpio_private_typedefs
- * @{
- */
-
-/**
- * @}
- */
-
-/**
- * @defgroup gpio_private_defines
+ * @addtogroup gpio_private_typedefs
  * @{
  */
 
@@ -57,7 +46,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup gpio_private_macros
+ * @addtogroup gpio_private_defines
  * @{
  */
 
@@ -66,7 +55,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup gpio_private_constants
+ * @addtogroup gpio_private_macros
  * @{
  */
 
@@ -75,7 +64,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup gpio_private_variables
+ * @addtogroup gpio_private_constants
  * @{
  */
 
@@ -84,7 +73,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup gpio_private_function_prototypes
+ * @addtogroup gpio_private_variables
  * @{
  */
 
@@ -93,7 +82,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup gpio_private_functions
+ * @addtogroup gpio_private_function_prototypes
  * @{
  */
 
@@ -102,15 +91,23 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup gpio_exported_functions
+ * @addtogroup gpio_private_functions
+ * @{
+ */
+
+/**
+ * @}
+ */
+
+/**
+ * @addtogroup gpio_exported_functions
  * @{
  */
 
 /**
  * @brief   On-board LEDs initialization function
- * @note    EVAL_GREEN_LED -> PG13
- *          EVAL_RED_LED -> PG14
- * @param   Led_Type led
+ * @note    EVAL_GREEN_LED -> PG13, EVAL_RED_LED -> PG14
+ * @param   led
  * @retval  None
  */
 void GPIO_Init_LED(Led_Type led)
@@ -161,7 +158,6 @@ void GPIO_Init_LED(Led_Type led)
 /**
  * @brief   Push button GPIO initialization function
  * @note    On-board push button connected to PA0
- * @param   None
  * @retval  None
  */
 void GPIO_Init_PB()
@@ -178,9 +174,8 @@ void GPIO_Init_PB()
 
 /**
  * @brief   Turns on-board LED on
- * @note    EVAL_GREEN_LED -> PG13
- *          EVAL_RED_LED -> PG14
- * @param   Led_Type led
+ * @note    EVAL_GREEN_LED -> PG13, EVAL_RED_LED -> PG14
+ * @param   led
  * @retval  None
  */
 void GPIO_TurnON_LED(Led_Type led)
@@ -210,9 +205,8 @@ void GPIO_TurnON_LED(Led_Type led)
 
 /**
  * @brief   Turns on-board LED off
- * @note    EVAL_GREEN_LED -> PG13
- *          EVAL_RED_LED -> PG14
- * @param   Led_Type led
+ * @note    EVAL_GREEN_LED -> PG13, EVAL_RED_LED -> PG14
+ * @param   led
  * @retval  None
  */
 void GPIO_TurnOFF_LED(Led_Type led)
@@ -242,9 +236,8 @@ void GPIO_TurnOFF_LED(Led_Type led)
 
 /**
  * @brief   Toggle on-board LED
- * @note    EVAL_GREEN_LED -> PG13
- *          EVAL_RED_LED -> PG14
- * @param   Led_Type led
+ * @note    EVAL_GREEN_LED -> PG13, EVAL_RED_LED -> PG14
+ * @param   led
  * @retval  None
  */
 void GPIO_Toggle_LED(Led_Type led)

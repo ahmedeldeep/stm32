@@ -43,6 +43,7 @@
 #include "adc.h"
 #include "dac.h"
 #include "audio.h"
+#include "IKS01A2.h"
 
 /** @addtogroup Template_Project
   * @{
@@ -214,6 +215,25 @@ void DMA1_Stream0_IRQHandler(void)
   LIN_Slave_RX_DMA_IRQ_Callback();
 }
 
+/**
+  * @brief  This function handles DMA1 Stream2 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void DMA1_Stream2_IRQHandler(void)
+{
+  I2C3_RX_DMA_IRQ_Callback();
+}
+
+/**
+  * @brief  This function handles DMA1 Stream4 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void DMA1_Stream4_IRQHandler(void)
+{
+  I2C3_TX_DMA_IRQ_Callback();
+}
 /**
   * @brief  This function handles DMA1 Stream6 interrupt request.
   * @param  None

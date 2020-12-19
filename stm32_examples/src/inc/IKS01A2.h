@@ -1,15 +1,16 @@
 /*******************************************************************************
- * @file    main.c
+ * @file    IKS01A2.h
  * @author  Ahmed Eldeep
  * @email   ahmed@almohandes.org
  * @website http://almohandes.org/stm32
- * @date    21.03.2018
- *          
- * @brief   main application called after startup
- * @note    
+ * @date    01.01.2019
+ *
+ * @brief   Interfacing X-NUCLEO-IKS01A2 motion MEMS and environmental
+ *          sensor expansion board.
+ * @note
  *
 @verbatim
-Copyright (C) Almohandes.org, 2018
+Copyright (C) Almohandes.org, 2019
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
@@ -24,12 +25,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 @endverbatim
 *******************************************************************************/
 
+/* Define to prevent recursive inclusion */
+#ifndef __INC_IKS01A2_H_
+#define __INC_IKS01A2_H_
+
+/* C++ detection */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Includes */
 #include "stm32f4xx.h"
-#include "nvic.h"
-#include "SysTick.h"
-#include "gpio.h"
-#include "IKS01A2.h"
 
 /**
  * @addtogroup stm32_examples
@@ -37,22 +43,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main
- * @brief
+ * @addtogroup IKS01A2
  * @{
  */
 
 /**
- * @defgroup main_private_typedefs
- * @{
- */
-
-/**
- * @}
- */
-
-/**
- * @defgroup main_private_defines
+ * @defgroup IKS01A2_exported_typedefs
  * @{
  */
 
@@ -61,7 +57,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_macros
+ * @defgroup IKS01A2_exported_defines
  * @{
  */
 
@@ -70,7 +66,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_constants
+ * @defgroup IKS01A2_exported_macros
  * @{
  */
 
@@ -79,7 +75,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_variables
+ * @defgroup IKS01A2_exported_constants
  * @{
  */
 
@@ -88,60 +84,27 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_function_prototypes
+ * @defgroup IKS01A2_exported_functions
  * @{
  */
+void IKS01A2_Init(void);
+void IKS01A2_Main(void);
+void I2C3_TX_DMA_IRQ_Callback(void);
+void I2C3_RX_DMA_IRQ_Callback(void);
 
 /**
  * @}
  */
-
 /**
- * @defgroup main_private_functions
- * @{
+ * @}
  */
-
 /**
  * @}
  */
 
-/**
- * @defgroup main_exported_functions
- * @{
- */
-
-/**
- * @brief   Main function
- * @note
- * @param   none
- * @retval  none
- */
-int main(void)
-{
-  SysTick_Init();
-  NVIC_Init();
-  GPIO_Init_LED(EVAL_ALL_LEDs);
-
-  /* Clear PRIMASK, enable IRQs */
-  __enable_irq();
-
-  /* Configuration functions */
-  IKS01A2_Init();
-
-  /* Infinite loop */
-  while(1)
-  {
-    /* Main Function */
-    IKS01A2_Main();
-  }
+/* C++ detection */
+#ifdef __cplusplus
 }
+#endif
 
-/**
- * @}
- */
-/**
- * @}
- */
-/**
- * @}
- */
+#endif /*__INC_IKS01A2_H_ */
