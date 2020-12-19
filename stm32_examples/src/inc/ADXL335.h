@@ -1,12 +1,12 @@
 /*******************************************************************************
- * @file    main.c
+ * @file    ADXL335.h
  * @author  Ahmed Eldeep
  * @email   ahmed@almohandes.org
  * @website http://almohandes.org/stm32
- * @date    21.03.2018
- *          
- * @brief   main application called after startup
- * @note    
+ * @date    05.12.2018
+ *
+ * @brief   Interfacing Accelerometer ADXL335
+ * @note
  *
 @verbatim
 Copyright (C) Almohandes.org, 2018
@@ -24,12 +24,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 @endverbatim
 *******************************************************************************/
 
+/* Define to prevent recursive inclusion */
+#ifndef __INC_ADXL335_H_
+#define __INC_ADXL335_H_
+
+/* C++ detection */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Includes */
 #include "stm32f4xx.h"
-#include "nvic.h"
-#include "SysTick.h"
-#include "gpio.h"
-#include "ADXL335.h"
 
 /**
  * @addtogroup stm32_examples
@@ -37,22 +42,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main
- * @brief
+ * @addtogroup ADXL335
  * @{
  */
 
 /**
- * @defgroup main_private_typedefs
- * @{
- */
-
-/**
- * @}
- */
-
-/**
- * @defgroup main_private_defines
+ * @defgroup ADXL335_exported_typedefs
  * @{
  */
 
@@ -61,7 +56,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_macros
+ * @defgroup ADXL335_exported_defines
  * @{
  */
 
@@ -70,7 +65,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_constants
+ * @defgroup ADXL335_exported_macros
  * @{
  */
 
@@ -79,7 +74,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_variables
+ * @defgroup ADXL335_exported_constants
  * @{
  */
 
@@ -88,59 +83,25 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_function_prototypes
+ * @defgroup ADXL335_exported_functions
  * @{
  */
+void ADXL335_Config(void);
+void ADXL335_Main(void);
 
 /**
  * @}
  */
-
 /**
- * @defgroup main_private_functions
- * @{
+ * @}
  */
-
 /**
  * @}
  */
 
-/**
- * @defgroup main_exported_functions
- * @{
- */
-
-/**
- * @brief   Main function
- * @note
- * @param   none
- * @retval  none
- */
-int main(void)
-{
-  /* Disable SysTick, so we do not get interrupted */
-  SysTick_Init();
-  NVIC_Init();
-  GPIO_Init_LED(EVAL_ALL_LEDs);
-
-  /* Clear PRIMASK, enable IRQs */
-  __enable_irq();
-
-  ADXL335_Config();
-
-  /* Infinite loop */
-  while(1)
-  {
-    ADXL335_Main();
-  }
+/* C++ detection */
+#ifdef __cplusplus
 }
+#endif
 
-/**
- * @}
- */
-/**
- * @}
- */
-/**
- * @}
- */
+#endif /*__INC_ADXL335_H_ */
