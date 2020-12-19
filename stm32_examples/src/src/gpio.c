@@ -233,6 +233,30 @@ void GPIO_TurnOFF_LED(Led_Type led)
 }
 
 /**
+ * @brief   Toggle on-board LED
+ * @note    EVAL_GREEN_LED -> PG13
+ *          EVAL_RED_LED -> PG14
+ * @param   Led_Type led
+ * @retval  None
+ */
+void GPIO_Toggle_LED(Led_Type led)
+{
+  switch (led)
+  {
+    case EVAL_GREEN_LED:
+      GPIOG->ODR ^= GPIO_ODR_ODR_13;
+      break;
+
+    case EVAL_RED_LED:
+      GPIOG->ODR ^= GPIO_ODR_ODR_14;
+      break;
+
+    default:
+      break;
+  }
+}
+
+/**
  * @}
  */
 /**

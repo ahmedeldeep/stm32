@@ -36,6 +36,7 @@
 #include "DS18B20.h"
 #include "LIN_Slave.h"
 #include "rcc.h"
+#include "timer.h"
 
 /** @addtogroup Template_Project
   * @{
@@ -278,6 +279,16 @@ void USART1_IRQHandler(void)
 void UART5_IRQHandler(void)
 {
   LIN_Slave_UART5_IRQ_Callback();
+}
+
+/**
+  * @brief  This function handles TIM4 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void TIM4_IRQHandler(void)
+{
+  TIM4_IRQ_Callback();
 }
 
 
