@@ -35,6 +35,7 @@
 #include "usart1.h"
 #include "DS18B20.h"
 #include "LIN_Slave.h"
+#include "rcc.h"
 
 /** @addtogroup Template_Project
   * @{
@@ -163,7 +164,7 @@ void SysTick_Handler(void)
   */
 void EXTI0_IRQHandler(void)
 {
-
+  RCC_SystemReset();
 }
 
 /**

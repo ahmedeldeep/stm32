@@ -122,9 +122,9 @@
 #if defined  (PLL_SOURCE_HSI)
 #define PLL_M      16
 #else
-#define PLL_M      8
+#define PLL_M      4
 #endif
-#define PLL_N      360
+#define PLL_N      180
 
 /* SYSCLK = PLL_VCO / PLL_P */
 #define PLL_P      2

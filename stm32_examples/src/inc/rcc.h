@@ -1,12 +1,12 @@
 /*******************************************************************************
- * @file    main.c
+ * @file    rcc.h
  * @author  Ahmed Eldeep
  * @email   ahmed@almohandes.org
  * @website http://almohandes.org/stm32
- * @date    21.03.2018
- *          
- * @brief   main application called after startup
- * @note    
+ * @date    06.07.2018
+ *
+ * @brief   RCC Examples
+ * @note
  *
 @verbatim
 Copyright (C) Almohandes.org, 2018
@@ -24,12 +24,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 @endverbatim
 *******************************************************************************/
 
+/* Define to prevent recursive inclusion */
+#ifndef __INC_RCC_H_
+#define __INC_RCC_H_
+
+/* C++ detection */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Includes */
-#include "nvic.h"
-#include "SysTick.h"
-#include "gpio.h"
-#include "exti.h"
-#include "rcc.h"
+#include "stm32f4xx.h"
 
 /**
  * @addtogroup stm32_examples
@@ -37,22 +42,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main
- * @brief
+ * @addtogroup rcc
  * @{
  */
 
 /**
- * @defgroup main_private_typedefs
- * @{
- */
-
-/**
- * @}
- */
-
-/**
- * @defgroup main_private_defines
+ * @defgroup rcc_exported_typedefs
  * @{
  */
 
@@ -61,7 +56,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_macros
+ * @defgroup rcc_exported_defines
  * @{
  */
 
@@ -70,7 +65,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_constants
+ * @defgroup rcc_exported_macros
  * @{
  */
 
@@ -79,7 +74,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_variables
+ * @defgroup rcc_exported_constants
  * @{
  */
 
@@ -88,63 +83,27 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_function_prototypes
+ * @defgroup rcc_exported_functions
  * @{
  */
+void RCC_SystemReset(void);
+void RCC_DetectResetSource(void);
+void RCC_ProcessReset(void);
+void RCC_ClockOut_Setup(void);
 
 /**
  * @}
  */
-
 /**
- * @defgroup main_private_functions
- * @{
+ * @}
  */
-
 /**
  * @}
  */
 
-/**
- * @defgroup main_exported_functions
- * @{
- */
-
-/**
- * @brief   Main function
- * @note
- * @param   none
- * @retval  none
- */
-int main(void)
-{
-  SysTick_Init();
-  NVIC_Init();
-
-  GPIO_Init_LED(EVAL_ALL_LEDs);
-  GPIO_Init_PB();
-  EXTI_Init_PB();
-  RCC_ClockOut_Setup();
-
-  /* Clear PRIMASK, enable IRQs */
-  __enable_irq();
-
-  /* Detect reset source */
-  RCC_DetectResetSource();
-
-  /* Infinite loop */
-  while(1)
-  {
-    RCC_ProcessReset();
-  }
+/* C++ detection */
+#ifdef __cplusplus
 }
+#endif
 
-/**
- * @}
- */
-/**
- * @}
- */
-/**
- * @}
- */
+#endif /*__INC_RCC_H_ */
