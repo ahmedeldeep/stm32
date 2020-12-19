@@ -97,7 +97,7 @@ static RTOS_stack_t thread4stack;
 static RTOS_mutex_t mutex1;
 static RTOS_semaphore_t semaphore1;
 static RTOS_mailbox_t mailbox1;
-static uint32_t mailbox1buffer[2];
+static uint32_t mailbox1buffer[3];
 
 /**
  * @}
@@ -124,11 +124,18 @@ static uint32_t mailbox1buffer[2];
  */
 void thread1function(void)
 {
+  uint32_t msg = 0x11223344;
 
   while(1)
   {
-    ITM_Printf("Hello World! from thread 1\n");
-    ITM_Printf("**************************\n");
+//    RTOS_SVC_semaphoreTake(&semaphore1, 1);
+//
+//    ITM_Printf("Hello World! from thread 1\n");
+//    ITM_Printf("**************************\n");
+//
+//    RTOS_SVC_semaphoreGive(&semaphore1);
+
+    RTOS_SVC_mailboxWrite(&mailbox1, 1, &msg);
 
     for (int var = 0; var < 1000000; ++var)
     {
@@ -144,11 +151,18 @@ void thread1function(void)
  */
 void thread2function(void)
 {
+  uint32_t msg = 0x55667788;
 
   while(1)
   {
-    ITM_Printf("Hello World! from thread 2\n");
-    ITM_Printf("**************************\n");
+//    RTOS_SVC_semaphoreTake(&semaphore1, 1);
+//
+//    ITM_Printf("Hello World! from thread 2\n");
+//    ITM_Printf("**************************\n");
+//
+//    RTOS_SVC_semaphoreGive(&semaphore1);
+
+    RTOS_SVC_mailboxWrite(&mailbox1, 1, &msg);
 
     for (int var = 0; var < 1000000; ++var)
     {
@@ -164,11 +178,18 @@ void thread2function(void)
  */
 void thread3function(void)
 {
+  uint32_t msg = 0x99101011;
 
   while(1)
   {
-    ITM_Printf("Hello World! from thread 3\n");
-    ITM_Printf("**************************\n");
+//    RTOS_SVC_semaphoreTake(&semaphore1, 1);
+//
+//    ITM_Printf("Hello World! from thread 3\n");
+//    ITM_Printf("**************************\n");
+//
+//    RTOS_SVC_semaphoreGive(&semaphore1);
+
+    RTOS_SVC_mailboxWrite(&mailbox1, 1, &msg);
 
     for (int var = 0; var < 1000000; ++var)
     {
@@ -184,11 +205,54 @@ void thread3function(void)
  */
 void thread4function(void)
 {
+  uint32_t msg;
 
   while(1)
   {
-    ITM_Printf("Hello World! from thread 4\n");
-    ITM_Printf("**************************\n");
+//    RTOS_SVC_semaphoreTake(&semaphore1, 1);
+//
+//    ITM_Printf("Hello World! from thread 4\n");
+//    ITM_Printf("**************************\n");
+//
+//    RTOS_SVC_semaphoreGive(&semaphore1);
+
+    RTOS_SVC_mailboxRead(&mailbox1, 1, &msg);
+
+    if(0x11223344 == msg)
+    {
+      ITM_Printf("Message from thread 1\n");
+    }
+    else if(0x55667788 == msg)
+    {
+      ITM_Printf("Message from thread 2\n");
+    }
+    else if(0x99101011 == msg)
+    {
+      ITM_Printf("Message from thread 3\n");
+    }
+    else
+    {
+      /* Do nothing */
+    }
+
+    RTOS_SVC_mailboxRead(&mailbox1, 1, &msg);
+
+    if(0x11223344 == msg)
+    {
+      ITM_Printf("Message from thread 1\n");
+    }
+    else if(0x55667788 == msg)
+    {
+      ITM_Printf("Message from thread 2\n");
+    }
+    else if(0x99101011 == msg)
+    {
+      ITM_Printf("Message from thread 3\n");
+    }
+    else
+    {
+      /* Do nothing */
+    }
 
     for (int var = 0; var < 1000000; ++var)
     {
