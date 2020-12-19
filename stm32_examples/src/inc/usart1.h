@@ -1,12 +1,12 @@
 /*******************************************************************************
- * @file    main.c
+ * @file    usart1.h
  * @author  Ahmed Eldeep
  * @email   ahmed@almohandes.org
  * @website http://almohandes.org/stm32
- * @date    21.03.2018
- *          
- * @brief   main application called after startup
- * @note    
+ * @date    09.05.2018
+ *
+ * @brief   USART1 example using ST virtual COM port (VCP)
+ * @note
  *
 @verbatim
 Copyright (C) Almohandes.org, 2018
@@ -24,11 +24,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 @endverbatim
 *******************************************************************************/
 
+/* Define to prevent recursive inclusion */
+#ifndef __INC_USART1_H_
+#define __INC_USART1_H_
+
+/* C++ detection */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Includes */
-#include "nvic.h"
-#include "SysTick.h"
-#include "gpio.h"
-#include "usart1.h"
+#include "stm32f4xx.h"
 
 /**
  * @addtogroup stm32_examples
@@ -36,22 +42,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main
- * @brief
+ * @addtogroup usart1
  * @{
  */
 
 /**
- * @defgroup main_private_typedefs
- * @{
- */
-
-/**
- * @}
- */
-
-/**
- * @defgroup main_private_defines
+ * @defgroup usart1_exported_typedefs
  * @{
  */
 
@@ -60,7 +56,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_macros
+ * @defgroup usart1_exported_defines
  * @{
  */
 
@@ -69,7 +65,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_constants
+ * @defgroup usart1_exported_macros
  * @{
  */
 
@@ -78,7 +74,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_variables
+ * @defgroup usart1_exported_constants
  * @{
  */
 
@@ -87,61 +83,63 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_function_prototypes
+ * @defgroup usart1_exported_functions
  * @{
  */
 
 /**
- * @}
+ * @brief   Configure GPIO with AF7, USART1 connected to APB2 with 90MHz clock
+ * @note    PA9 -> USART1_TX, PA10 -> USART1_RX
+ * @param   None
+ * @retval  None
  */
+void USART1_GPIO_Config(void);
 
 /**
- * @defgroup main_private_functions
- * @{
- */
-
-/**
- * @}
- */
-
-/**
- * @defgroup main_exported_functions
- * @{
- */
-
-/**
- * @brief   Main function
+ * @brief   Configure USART1 for ST virtual COM port (VCP)
  * @note
- * @param   none
- * @retval  none
+ * @param   None
+ * @retval  None
  */
-int main(void)
-{
-  SysTick_Init();
-  GPIO_Init_LED(EVAL_ALL_LEDs);
-  NVIC_Init();
+void USART1_Init(void);
 
-  USART1_GPIO_Config();
-  USART1_Init();
+/**
+ * @brief   Enable USART1 transmitter and receiver
+ * @note
+ * @param   None
+ * @retval  None
+ */
+void USART1_Enable(void);
 
-  /* Clear PRIMASK, enable IRQs */
-  __enable_irq();
+/**
+ * @brief   IRQ callback function
+ * @note
+ * @param   None
+ * @retval  None
+ */
+void USART1_IRQ_Callback(void);
 
-  USART1_Enable();
+/**
+ * @brief   USART1 transmit and receive data
+ * @note
+ * @param   None
+ * @retval  None
+ */
+void USART1_Process(void);
 
-  /* Infinite loop */
-  while(1)
-  {
-    USART1_Process();
-  }
+/**
+ * @}
+ */
+/**
+ * @}
+ */
+/**
+ * @}
+ */
+
+/* C++ detection */
+#ifdef __cplusplus
 }
+#endif
 
-/**
- * @}
- */
-/**
- * @}
- */
-/**
- * @}
- */
+#endif /*__INC_USART1_H_ */

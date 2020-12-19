@@ -147,11 +147,15 @@ void DMA2_Stream0_Init()
   DMA2_Stream0->CR |= DMA_SxCR_MSIZE_1;
   DMA2_Stream0->CR |= DMA_SxCR_PSIZE_1;
 
+  /* Select burst transfers with 4 beats */
+  DMA2_Stream0->CR |= DMA_SxCR_MBURST_0;
+  DMA2_Stream0->CR |= DMA_SxCR_PBURST_0;
+
   /* Select FIFO mode, it will be also set by hardware when stream enabled */
   DMA2_Stream0->FCR |= DMA_SxFCR_DMDIS;
 
   /* Select FIFO threshold level half FIFO */
-  DMA2_Stream0->FCR |= DMA_SxFCR_FTH_0;
+  DMA2_Stream0->FCR |= (DMA_SxFCR_FTH_0 | DMA_SxFCR_FTH_1);
 
   /* Select peripheral and memory incremented mode */
   DMA2_Stream0->CR |= DMA_SxCR_PINC;

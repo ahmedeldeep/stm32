@@ -32,6 +32,7 @@
 #include "stm32f4xx_it.h"
 #include "SysTick.h"
 #include "gpio.h"
+#include "usart1.h"
 
 /** @addtogroup Template_Project
   * @{
@@ -215,6 +216,17 @@ void DMA2_Stream0_IRQHandler(void)
     GPIO_TurnON_LED(EVAL_RED_LED);
   }
 }
+
+/**
+  * @brief  This function handles USART1 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void USART1_IRQHandler(void)
+{
+  USART1_IRQ_Callback();
+}
+
 
 /**
   * @}
