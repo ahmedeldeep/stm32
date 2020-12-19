@@ -127,17 +127,17 @@ void RTOS_semaphoreCreate(RTOS_semaphore_t * pSemaphore, uint32_t initialValue)
 /**
  * @brief   Semaphore take
  * @note
- * @param   RTOS_semaphore_t *, uint32_t
- * @retval  uint32_t
+ * @param   RTOS_semaphore_t *, int32_t
+ * @retval  RTOS_return_t
  */
-uint32_t RTOS_semaphoreTake(RTOS_semaphore_t * pSemaphore, uint32_t waitFlag)
+RTOS_return_t RTOS_semaphoreTake(RTOS_semaphore_t * pSemaphore, int32_t waitTime)
 {
   /* Check input parameters */
   ASSERT(NULL != pSemaphore);
-  ASSERT((0 == waitFlag) || (1 == waitFlag));
+  ASSERT(WAIT_INDEFINITELY <= waitTime);
 
   /* Semaphore take return status */
-  uint32_t returnStatus = 0;
+  RTOS_return_t returnStatus = RTOS_FAILURE;
 
   /* Pointer to the current running thread */
   RTOS_thread_t * pRunningThread;
@@ -166,7 +166,7 @@ uint32_t RTOS_semaphoreTake(RTOS_semaphore_t * pSemaphore, uint32_t waitFlag)
         __DMB();
 
         /* Semaphore is taken, return OK */
-        returnStatus = 1;
+        returnStatus = RTOS_SUCCESS;
 
         /* Store succeeded, terminate the loop */
         terminate = 1;
@@ -183,23 +183,34 @@ uint32_t RTOS_semaphoreTake(RTOS_semaphore_t * pSemaphore, uint32_t waitFlag)
     }
   }
 
-  /* Check waiting flag and return status */
-  if((1 == waitFlag) && (1 != returnStatus))
+  /* Check waiting time and return status */
+  if((NO_WAIT != waitTime) && (RTOS_SUCCESS != returnStatus))
   {
     /* Get current running thread */
     pRunningThread = RTOS_threadGetRunning();
 
     /* Remove current thread from ready list */
-    RTOS_listRemove(&pRunningThread->item);
+    RTOS_listRemove(&pRunningThread->genericListItem);
 
     /* Put current thread into the waiting list */
-    RTOS_listInsert(&pSemaphore->waitingList, &pRunningThread->item);
+    RTOS_listInsert(&pSemaphore->waitingList, &pRunningThread->eventListItem);
 
     /* Trigger context switch, set PendSV to pending */
     SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
 
+    /* Check waiting time */
+    if(NO_WAIT < waitTime)
+    {
+      /* Waiting time configured, add current to the timer list */
+      RTOS_threadAddRunningToTimerList(waitTime);
+    }
+    else
+    {
+      /* Thread will wait indefinitely, do nothing */
+    }
+
     /* Return to SVC as indication of context switch */
-    returnStatus = 2;
+    returnStatus = RTOS_CONTEXT_SWITCH_TRIGGERED;
   }
   else
   {
@@ -263,7 +274,19 @@ void RTOS_semaphoreGive(RTOS_semaphore_t * pSemaphore)
     ASSERT(NULL != pThread);
 
     /* Remove the returned thread item from the waiting list */
-    RTOS_listRemove(&pThread->item);
+    RTOS_listRemove(&pThread->eventListItem);
+
+    /* Check if the generic item in any list */
+    if(NULL != pThread->genericListItem.pList)
+    {
+      /* Remove the generic item from the current list,
+       * as it will be inserted into ready list */
+      RTOS_listRemove(&pThread->genericListItem);
+    }
+    else
+    {
+      /* Do nothing, generic item is not in any list */
+    }
 
     /* Add the returned thread into ready list */
     RTOS_threadAddToReadyList(pThread);

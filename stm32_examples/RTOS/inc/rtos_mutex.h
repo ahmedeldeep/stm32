@@ -100,8 +100,8 @@ typedef struct
 void RTOS_mutexCreate(RTOS_mutex_t * pMutex, uint32_t initialValue);
 void RTOS_SVC_mutexCreate(RTOS_mutex_t * pMutex, uint32_t initialValue);
 
-uint32_t RTOS_mutexLock(RTOS_mutex_t * pMutex, uint32_t waitFlag);
-uint32_t RTOS_SVC_mutexLock(RTOS_mutex_t * pMutex, uint32_t waitFlag);
+RTOS_return_t RTOS_mutexLock(RTOS_mutex_t * pMutex, int32_t waitTime);
+RTOS_return_t RTOS_SVC_mutexLock(RTOS_mutex_t * pMutex, int32_t waitTime);
 
 void RTOS_mutexRelease(RTOS_mutex_t * pMutex);
 void RTOS_SVC_mutexRelease(RTOS_mutex_t * pMutex);

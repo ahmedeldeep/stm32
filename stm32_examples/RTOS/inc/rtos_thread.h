@@ -57,10 +57,11 @@ extern "C" {
  */
 typedef struct thread_t
 {
-  uint32_t pStackPointer;        /**< Stack pointer */
-  uint32_t priority;             /**< Thread priority */
-  uint32_t threadID;             /**< Used for trace */
-  RTOS_listItem_t item;          /**< List item of this thread */
+  uint32_t pStackPointer;          /**< Stack pointer */
+  uint32_t priority;               /**< Thread priority */
+  uint32_t threadID;               /**< Used for trace */
+  RTOS_listItem_t genericListItem; /**< Generic list item of this thread */
+  RTOS_listItem_t eventListItem;   /**< Event list item of this thread */
 } RTOS_thread_t;
 
 /**
@@ -118,6 +119,13 @@ void RTOS_threadInitLists(void);
 RTOS_thread_t * RTOS_threadGetRunning(void);
 void RTOS_threadSwitchRunning(void);
 void RTOS_threadAddToReadyList(RTOS_thread_t * pThread);
+void RTOS_threadRefreshTimerList(void);
+void RTOS_threadAddRunningToTimerList(uint32_t waitTime);
+
+void RTOS_SVC_threadDelay(uint32_t waitTime);
+
+void RTOS_threadDestroy(RTOS_thread_t * pThread);
+void RTOS_SVC_threadDestroy(RTOS_thread_t * pThread);
 
 /**
  * @}

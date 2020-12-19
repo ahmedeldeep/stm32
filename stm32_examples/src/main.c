@@ -95,7 +95,9 @@ static RTOS_thread_t thread4;
 static RTOS_stack_t thread4stack;
 
 static RTOS_mutex_t mutex1;
+
 static RTOS_semaphore_t semaphore1;
+
 static RTOS_mailbox_t mailbox1;
 static uint32_t mailbox1buffer[3];
 
@@ -107,6 +109,11 @@ static uint32_t mailbox1buffer[3];
  * @defgroup main_private_function_prototypes
  * @{
  */
+
+static void thread1function(void);
+static void thread2function(void);
+static void thread3function(void);
+static void thread4function(void);
 
 /**
  * @}
@@ -122,141 +129,94 @@ static uint32_t mailbox1buffer[3];
  * @param   none
  * @retval  none
  */
-void thread1function(void)
+static void thread1function(void)
 {
-  uint32_t msg = 0x11223344;
 
   while(1)
   {
-//    RTOS_SVC_semaphoreTake(&semaphore1, 1);
-//
-//    ITM_Printf("Hello World! from thread 1\n");
-//    ITM_Printf("**************************\n");
-//
-//    RTOS_SVC_semaphoreGive(&semaphore1);
-
-    RTOS_SVC_mailboxWrite(&mailbox1, 1, &msg);
-
-    for (int var = 0; var < 1000000; ++var)
+    if(RTOS_SUCCESS == RTOS_SVC_mutexLock(&mutex1, 10))
     {
-    }
-  }
-}
-
-/**
- * @brief   thread2function
- * @note
- * @param   none
- * @retval  none
- */
-void thread2function(void)
-{
-  uint32_t msg = 0x55667788;
-
-  while(1)
-  {
-//    RTOS_SVC_semaphoreTake(&semaphore1, 1);
-//
-//    ITM_Printf("Hello World! from thread 2\n");
-//    ITM_Printf("**************************\n");
-//
-//    RTOS_SVC_semaphoreGive(&semaphore1);
-
-    RTOS_SVC_mailboxWrite(&mailbox1, 1, &msg);
-
-    for (int var = 0; var < 1000000; ++var)
-    {
-    }
-  }
-}
-
-/**
- * @brief   thread2function
- * @note
- * @param   none
- * @retval  none
- */
-void thread3function(void)
-{
-  uint32_t msg = 0x99101011;
-
-  while(1)
-  {
-//    RTOS_SVC_semaphoreTake(&semaphore1, 1);
-//
-//    ITM_Printf("Hello World! from thread 3\n");
-//    ITM_Printf("**************************\n");
-//
-//    RTOS_SVC_semaphoreGive(&semaphore1);
-
-    RTOS_SVC_mailboxWrite(&mailbox1, 1, &msg);
-
-    for (int var = 0; var < 1000000; ++var)
-    {
-    }
-  }
-}
-
-/**
- * @brief   thread2function
- * @note
- * @param   none
- * @retval  none
- */
-void thread4function(void)
-{
-  uint32_t msg;
-
-  while(1)
-  {
-//    RTOS_SVC_semaphoreTake(&semaphore1, 1);
-//
-//    ITM_Printf("Hello World! from thread 4\n");
-//    ITM_Printf("**************************\n");
-//
-//    RTOS_SVC_semaphoreGive(&semaphore1);
-
-    RTOS_SVC_mailboxRead(&mailbox1, 1, &msg);
-
-    if(0x11223344 == msg)
-    {
-      ITM_Printf("Message from thread 1\n");
-    }
-    else if(0x55667788 == msg)
-    {
-      ITM_Printf("Message from thread 2\n");
-    }
-    else if(0x99101011 == msg)
-    {
-      ITM_Printf("Message from thread 3\n");
+      ITM_Printf("Thread 1: Mutex lock succeeded \n");
+      RTOS_SVC_threadDelay(15);
+      RTOS_SVC_mutexRelease(&mutex1);
     }
     else
     {
-      /* Do nothing */
+      ITM_Printf("Thread 1: Mutex lock failed \n");
     }
 
-    RTOS_SVC_mailboxRead(&mailbox1, 1, &msg);
+    RTOS_SVC_threadCreate(&thread4, &thread4stack, 1, thread4function);
+    RTOS_SVC_threadDelay(1);
+    RTOS_SVC_threadDestroy(&thread4);
+  }
+}
 
-    if(0x11223344 == msg)
+/**
+ * @brief   thread2function
+ * @note
+ * @param   none
+ * @retval  none
+ */
+static void thread2function(void)
+{
+
+  while(1)
+  {
+    if(RTOS_SUCCESS == RTOS_SVC_mutexLock(&mutex1, 10))
     {
-      ITM_Printf("Message from thread 1\n");
-    }
-    else if(0x55667788 == msg)
-    {
-      ITM_Printf("Message from thread 2\n");
-    }
-    else if(0x99101011 == msg)
-    {
-      ITM_Printf("Message from thread 3\n");
+      ITM_Printf("Thread 2: Mutex lock succeeded \n");
+      RTOS_SVC_threadDelay(15);
+      RTOS_SVC_mutexRelease(&mutex1);
     }
     else
     {
-      /* Do nothing */
+      ITM_Printf("Thread 2: Mutex lock failed \n");
     }
 
-    for (int var = 0; var < 1000000; ++var)
+    RTOS_SVC_threadDelay(1);
+  }
+}
+
+/**
+ * @brief   thread2function
+ * @note
+ * @param   none
+ * @retval  none
+ */
+static void thread3function(void)
+{
+
+  while(1)
+  {
+    if(RTOS_SUCCESS == RTOS_SVC_mutexLock(&mutex1, 10))
     {
+      ITM_Printf("Thread 3: Mutex lock succeeded \n");
+      RTOS_SVC_threadDelay(15);
+      RTOS_SVC_mutexRelease(&mutex1);
     }
+    else
+    {
+      ITM_Printf("Thread 3: Mutex lock failed \n");
+    }
+
+    RTOS_SVC_threadDelay(1);
+  }
+}
+
+/**
+ * @brief   thread2function
+ * @note
+ * @param   none
+ * @retval  none
+ */
+static void thread4function(void)
+{
+
+  ITM_Printf("Thread 4: Started \n");
+
+  while(1)
+  {
+
   }
 }
 
@@ -277,12 +237,12 @@ void thread4function(void)
  */
 int main(void)
 {
+  GPIO_Init_LED(EVAL_ALL_LEDs);
   RTOS_init();
 
   RTOS_SVC_threadCreate(&thread1, &thread1stack, 1, thread1function);
   RTOS_SVC_threadCreate(&thread2, &thread2stack, 1, thread2function);
   RTOS_SVC_threadCreate(&thread3, &thread3stack, 1, thread3function);
-  RTOS_SVC_threadCreate(&thread4, &thread4stack, 1, thread4function);
 
 
   RTOS_SVC_mutexCreate(&mutex1, 1);

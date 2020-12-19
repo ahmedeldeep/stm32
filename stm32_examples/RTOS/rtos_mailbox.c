@@ -124,7 +124,19 @@ static void checkWaitingThreads(RTOS_mailbox_t * pMailbox)
     ASSERT(NULL != pThread);
 
     /* Remove the returned thread item from the waiting list */
-    RTOS_listRemove(&pThread->item);
+    RTOS_listRemove(&pThread->eventListItem);
+
+    /* Check if the generic item in any list */
+    if(NULL != pThread->genericListItem.pList)
+    {
+      /* Remove the generic item from the current list,
+       * as it will be inserted into ready list */
+      RTOS_listRemove(&pThread->genericListItem);
+    }
+    else
+    {
+      /* Do nothing, generic item is not in any list */
+    }
 
     /* Add the returned thread into ready list */
     RTOS_threadAddToReadyList(pThread);
@@ -150,10 +162,10 @@ static void blockCurrentThread(RTOS_mailbox_t * pMailbox)
   pRunningThread = RTOS_threadGetRunning();
 
   /* Remove current thread from ready list */
-  RTOS_listRemove(&pRunningThread->item);
+  RTOS_listRemove(&pRunningThread->genericListItem);
 
   /* Put current thread into the waiting list */
-  RTOS_listInsert(&pMailbox->waitingList, &pRunningThread->item);
+  RTOS_listInsert(&pMailbox->waitingList, &pRunningThread->eventListItem);
 
   /* Trigger context switch, set PendSV to pending */
   SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
@@ -205,19 +217,19 @@ void RTOS_mailboxCreate(RTOS_mailbox_t * pMailbox, void * pBuffer,
 /**
  * @brief   Mailbox write
  * @note
- * @param   RTOS_mailbox_t *, uint32_t, const void * const
- * @retval  uint32_t
+ * @param   RTOS_mailbox_t *, int32_t, const void * const
+ * @retval  RTOS_return_t
  */
-uint32_t RTOS_mailboxWrite(RTOS_mailbox_t * pMailbox, uint32_t waitFlag,
+RTOS_return_t RTOS_mailboxWrite(RTOS_mailbox_t * pMailbox, int32_t waitTime,
     const void * const pMessage)
 {
   /* Check input parameters */
   ASSERT(NULL != pMailbox);
-  ASSERT((0 == waitFlag) || (1 == waitFlag));
+  ASSERT(WAIT_INDEFINITELY <= waitTime);
   ASSERT(NULL != pMessage);
 
   /* Return status */
-  uint32_t returnStatus = 0;
+  RTOS_return_t returnStatus = RTOS_FAILURE;
 
   /* Check if there is a free place to write */
   if(pMailbox->bufferLength > pMailbox->messagesNum)
@@ -246,21 +258,32 @@ uint32_t RTOS_mailboxWrite(RTOS_mailbox_t * pMailbox, uint32_t waitFlag,
     checkWaitingThreads(pMailbox);
 
     /* New message is added to the buffer, return OK */
-    returnStatus = 1;
+    returnStatus = RTOS_SUCCESS;
   }
   else
   {
     /* Do nothing, Buffer is full */
   }
 
-  /* Check waiting flag and return status */
-  if((1 == waitFlag) && (1 != returnStatus))
+  /* Check waiting time and return status */
+  if((NO_WAIT != waitTime) && (RTOS_SUCCESS != returnStatus))
   {
     /* Block current thread */
     blockCurrentThread(pMailbox);
 
+    /* Check waiting time */
+    if(NO_WAIT < waitTime)
+    {
+      /* Waiting time configured, add current to the timer list */
+      RTOS_threadAddRunningToTimerList(waitTime);
+    }
+    else
+    {
+      /* Thread will wait indefinitely, do nothing */
+    }
+
     /* Return to SVC as indication of context switch */
-    returnStatus = 2;
+    returnStatus = RTOS_CONTEXT_SWITCH_TRIGGERED;
   }
   else
   {
@@ -274,19 +297,19 @@ uint32_t RTOS_mailboxWrite(RTOS_mailbox_t * pMailbox, uint32_t waitFlag,
 /**
  * @brief   Mailbox read
  * @note
- * @param   RTOS_mailbox_t *, uint32_t, void * const
- * @retval  uint32_t
+ * @param   RTOS_mailbox_t *, int32_t, void * const
+ * @retval  RTOS_return_t
  */
-uint32_t RTOS_mailboxRead(RTOS_mailbox_t * pMailbox, uint32_t waitFlag,
+RTOS_return_t RTOS_mailboxRead(RTOS_mailbox_t * pMailbox, int32_t waitTime,
     void * const pMessage)
 {
   /* Check input parameters */
   ASSERT(NULL != pMailbox);
-  ASSERT((0 == waitFlag) || (1 == waitFlag));
+  ASSERT(WAIT_INDEFINITELY <= waitTime);
   ASSERT(NULL != pMessage);
 
   /* Return status */
-  uint32_t returnStatus = 0;
+  RTOS_return_t returnStatus = RTOS_FAILURE;
 
   /* Check if there are messages in the buffer */
   if(0 < pMailbox->messagesNum)
@@ -315,21 +338,32 @@ uint32_t RTOS_mailboxRead(RTOS_mailbox_t * pMailbox, uint32_t waitFlag,
     checkWaitingThreads(pMailbox);
 
     /* New message is removed from the buffer, return OK */
-    returnStatus = 1;
+    returnStatus = RTOS_SUCCESS;
   }
   else
   {
     /* Do nothing, Buffer is empty */
   }
 
-  /* Check waiting flag and return status */
-  if((1 == waitFlag) && (1 != returnStatus))
+  /* Check waiting time and return status */
+  if((NO_WAIT != waitTime) && (RTOS_SUCCESS != returnStatus))
   {
     /* Block current thread */
     blockCurrentThread(pMailbox);
 
+    /* Check waiting time */
+    if(NO_WAIT < waitTime)
+    {
+      /* Waiting time configured, add current to the timer list */
+      RTOS_threadAddRunningToTimerList(waitTime);
+    }
+    else
+    {
+      /* Thread will wait indefinitely, do nothing */
+    }
+
     /* Return to SVC as indication of context switch */
-    returnStatus = 2;
+    returnStatus = RTOS_CONTEXT_SWITCH_TRIGGERED;
   }
   else
   {

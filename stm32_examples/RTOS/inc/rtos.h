@@ -37,14 +37,9 @@ extern "C" {
 #include <stddef.h>
 #include <string.h>
 #include "stm32f4xx.h"
-#include "itm.h"
 
+/* Includes */
 #include "rtos_config.h"
-#include "rtos_list.h"
-#include "rtos_thread.h"
-#include "rtos_mutex.h"
-#include "rtos_semaphore.h"
-#include "rtos_mailbox.h"
 
 /**
  * @addtogroup stm32_examples
@@ -62,6 +57,16 @@ extern "C" {
  */
 
 /**
+ * @brief   RTOS return types
+ */
+typedef enum
+{
+  RTOS_SUCCESS,
+  RTOS_FAILURE,
+  RTOS_CONTEXT_SWITCH_TRIGGERED
+} RTOS_return_t;
+
+/**
  * @}
  */
 
@@ -69,6 +74,12 @@ extern "C" {
  * @defgroup rtos_exported_defines
  * @{
  */
+
+/**
+ * @brief   Waiting flags
+ */
+#define NO_WAIT                 ((int32_t) 0)
+#define WAIT_INDEFINITELY       ((int32_t) -1)
 
 /**
  * @}
@@ -107,6 +118,7 @@ void RTOS_schedulerStart(void);
 void RTOS_SVC_schedulerStart(void);
 void RTOS_SVC_Handler_main(uint32_t * svc_args);
 void RTOS_SysTick_Handler(void);
+uint32_t RTOS_isSchedulerRunning(void);
 
 /**
  * @}
@@ -117,6 +129,13 @@ void RTOS_SysTick_Handler(void);
 /**
  * @}
  */
+
+/* Includes */
+#include "rtos_list.h"
+#include "rtos_thread.h"
+#include "rtos_mutex.h"
+#include "rtos_semaphore.h"
+#include "rtos_mailbox.h"
 
 /* C++ detection */
 #ifdef __cplusplus

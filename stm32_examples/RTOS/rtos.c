@@ -80,9 +80,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @brief   Variable to store millisecond ticks
+ * @brief   Flag used to indicate the scheduler status
  */
-static volatile uint32_t sysTickCounter = 0;
+static uint32_t schedulerRunning = 0;
 
 /**
  * @brief   Thread and stack object for idle thread
@@ -226,11 +226,22 @@ void RTOS_schedulerStart(void)
   /* Execute ISB after changing CONTROL */
   __ISB();
 
-  /* Reset tick counter */
-  sysTickCounter = 0;
+  /* Flag scheduler is running */
+  schedulerRunning = 1;
 
   /* Enable all interrupts */
   __set_BASEPRI(0);
+}
+
+/**
+ * @brief   Returns scheduler running status
+ * @note
+ * @param   None
+ * @retval  None
+ */
+uint32_t RTOS_isSchedulerRunning(void)
+{
+  return schedulerRunning;
 }
 
 /**
@@ -250,7 +261,7 @@ void RTOS_SVC_Handler_main(uint32_t * svc_args)
   svc_number = ((char *) svc_args[6])[-2];
 
   /* Temp variables */
-  uint32_t returnStatus;
+  RTOS_return_t returnStatus;
 
   /* Check svc number */
   switch(svc_number)
@@ -273,7 +284,7 @@ void RTOS_SVC_Handler_main(uint32_t * svc_args)
 
     case 3:
       returnStatus = RTOS_mutexLock((RTOS_mutex_t *) svc_args[0],
-          (uint32_t) svc_args[1]);
+          (int32_t) svc_args[1]);
     break;
 
     case 4:
@@ -287,7 +298,7 @@ void RTOS_SVC_Handler_main(uint32_t * svc_args)
 
     case 6:
       returnStatus = RTOS_semaphoreTake((RTOS_semaphore_t *) svc_args[0],
-          (uint32_t) svc_args[1]);
+          (int32_t) svc_args[1]);
     break;
 
     case 7:
@@ -301,12 +312,20 @@ void RTOS_SVC_Handler_main(uint32_t * svc_args)
 
     case 9:
       returnStatus = RTOS_mailboxWrite((RTOS_mailbox_t *) svc_args[0],
-          (uint32_t) svc_args[1], (const void * const) svc_args[2]);
+          (int32_t) svc_args[1], (const void * const) svc_args[2]);
     break;
 
     case 10:
       returnStatus = RTOS_mailboxRead((RTOS_mailbox_t *) svc_args[0],
-          (uint32_t) svc_args[1], (void * const) svc_args[2]);
+          (int32_t) svc_args[1], (void * const) svc_args[2]);
+    break;
+
+    case 11:
+      RTOS_threadAddRunningToTimerList((uint32_t) svc_args[0]);
+    break;
+
+    case 12:
+      RTOS_threadDestroy((RTOS_thread_t *) svc_args[0]);
     break;
 
     default:
@@ -324,11 +343,22 @@ void RTOS_SVC_Handler_main(uint32_t * svc_args)
     case 9:
     case 10:
       /* Check return status */
-      if(2 == returnStatus)
+      if(RTOS_CONTEXT_SWITCH_TRIGGERED == returnStatus)
       {
         /* Context switch was triggered, update program counter,
          * when the context is restored the thread will try again */
         svc_args[6] = svc_args[6] - 2;
+
+        /* Set waiting time to no wait if it was specified */
+        if(NO_WAIT < (int32_t) svc_args[1])
+        {
+          /* Reset waiting time */
+          svc_args[1] = NO_WAIT;
+        }
+        else
+        {
+          /* Do nothing, no wait time specified */
+        }
       }
       else
       {
@@ -338,7 +368,7 @@ void RTOS_SVC_Handler_main(uint32_t * svc_args)
     break;
 
     default:
-      /* Handled above */
+      /* Handled before */
     break;
   }
 }
@@ -354,8 +384,8 @@ void RTOS_SysTick_Handler(void)
   /* Trigger context switch, set PendSV to pending */
   SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
 
-  /* Increment SysTick counter */
-  ++sysTickCounter;
+  /* Refresh the timer list */
+  RTOS_threadRefreshTimerList();
 }
 
 /**
