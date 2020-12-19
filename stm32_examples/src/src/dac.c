@@ -191,9 +191,6 @@ void DAC_Config(void)
   DAC->CR &= ~DAC_CR_TSEL2;
   DAC->CR |= DAC_CR_TSEL2_2;
 
-  /* Enable external trigger */
-  DAC->CR |= DAC_CR_TEN2;
-
   /* DAC channel2 enable */
   DAC->CR |= DAC_CR_EN2;
 

@@ -1,12 +1,12 @@
 /*******************************************************************************
- * @file    main.c
+ * @file    audio.h
  * @author  Ahmed Eldeep
  * @email   ahmed@almohandes.org
  * @website http://almohandes.org/stm32
- * @date    21.03.2018
- *          
- * @brief   main application called after startup
- * @note    
+ * @date    22.12.2018
+ *
+ * @brief   Audio recording and playing example
+ * @note
  *
 @verbatim
 Copyright (C) Almohandes.org, 2018
@@ -24,13 +24,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 @endverbatim
 *******************************************************************************/
 
+/* Define to prevent recursive inclusion */
+#ifndef __INC_AUDIO_H_
+#define __INC_AUDIO_H_
+
+/* C++ detection */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Includes */
 #include "stm32f4xx.h"
-#include "nvic.h"
-#include "SysTick.h"
-#include "gpio.h"
-#include "exti.h"
-#include "audio.h"
 
 /**
  * @addtogroup stm32_examples
@@ -38,22 +42,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main
- * @brief
+ * @addtogroup audio
  * @{
  */
 
 /**
- * @defgroup main_private_typedefs
- * @{
- */
-
-/**
- * @}
- */
-
-/**
- * @defgroup main_private_defines
+ * @defgroup audio_exported_typedefs
  * @{
  */
 
@@ -62,7 +56,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_macros
+ * @defgroup audio_exported_defines
  * @{
  */
 
@@ -71,7 +65,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_constants
+ * @defgroup audio_exported_macros
  * @{
  */
 
@@ -80,7 +74,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_variables
+ * @defgroup audio_exported_constants
  * @{
  */
 
@@ -89,65 +83,30 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_function_prototypes
+ * @defgroup audio_exported_functions
  * @{
  */
+void AUDIO_ADC_Config(void);
+void AUDIO_DAC_Config(void);
+void AUDIO_Timer_Config(void);
+void AUDIO_Main(void);
+void AUDIO_PB_Callback(void);
+void AUDIO_DMA2_Stream0_Callback(void);
+void AUDIO_DMA1_Stream6_Callback(void);
 
 /**
  * @}
  */
-
 /**
- * @defgroup main_private_functions
- * @{
+ * @}
  */
-
 /**
  * @}
  */
 
-/**
- * @defgroup main_exported_functions
- * @{
- */
-
-/**
- * @brief   Main function
- * @note
- * @param   none
- * @retval  none
- */
-int main(void)
-{
-  /* Disable SysTick, so we do not get interrupted */
-  SysTick_Init();
-  NVIC_Init();
-  GPIO_Init_LED(EVAL_ALL_LEDs);
-  GPIO_Init_PB();
-  EXTI_Init_PB();
-
-  /* Configuration functions */
-  AUDIO_ADC_Config();
-  AUDIO_DAC_Config();
-  AUDIO_Timer_Config();
-
-  /* Clear PRIMASK, enable IRQs */
-  __enable_irq();
-
-  /* Infinite loop */
-  while(1)
-  {
-    /* Main Function */
-    AUDIO_Main();
-  }
+/* C++ detection */
+#ifdef __cplusplus
 }
+#endif
 
-/**
- * @}
- */
-/**
- * @}
- */
-/**
- * @}
- */
+#endif /*__INC_AUDIO_H_ */

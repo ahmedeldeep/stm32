@@ -42,6 +42,7 @@
 #include "L3GD20.h"
 #include "adc.h"
 #include "dac.h"
+#include "audio.h"
 
 /** @addtogroup Template_Project
   * @{
@@ -170,7 +171,7 @@ void SysTick_Handler(void)
   */
 void EXTI0_IRQHandler(void)
 {
-  DAC_PB_Callback();
+  AUDIO_PB_Callback();
 }
 
 /**
@@ -214,6 +215,16 @@ void DMA1_Stream0_IRQHandler(void)
 }
 
 /**
+  * @brief  This function handles DMA1 Stream6 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void DMA1_Stream6_IRQHandler(void)
+{
+  AUDIO_DMA1_Stream6_Callback();
+}
+
+/**
   * @brief  This function handles DMA1 Stream7 interrupt request.
   * @param  None
   * @retval None
@@ -230,20 +241,7 @@ void DMA1_Stream7_IRQHandler(void)
   */
 void DMA2_Stream0_IRQHandler(void)
 {
-  /* Check transfer complete flag */
-  if(DMA_LISR_TCIF0 == (DMA_LISR_TCIF0 & DMA2->LISR))
-  {
-    /* DMA transfer is complete, turn off green LED */
-    GPIO_TurnOFF_LED(EVAL_GREEN_LED);
-
-    /* Clear transfer complete flag */
-    DMA2->LIFCR = DMA_LIFCR_CTCIF0;
-  }
-  else
-  {
-    /* Turn on red LED, this interrupt is not handled */
-    GPIO_TurnON_LED(EVAL_RED_LED);
-  }
+  AUDIO_DMA2_Stream0_Callback();
 }
 
 /**
