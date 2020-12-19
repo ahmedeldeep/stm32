@@ -1,12 +1,12 @@
 /*******************************************************************************
- * @file    main.c
+ * @file    dac.h
  * @author  Ahmed Eldeep
  * @email   ahmed@almohandes.org
  * @website http://almohandes.org/stm32
- * @date    21.03.2018
- *          
- * @brief   main application called after startup
- * @note    
+ * @date    16.12.2018
+ *
+ * @brief   DAC examples
+ * @note
  *
 @verbatim
 Copyright (C) Almohandes.org, 2018
@@ -24,13 +24,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 @endverbatim
 *******************************************************************************/
 
+/* Define to prevent recursive inclusion */
+#ifndef __INC_DAC_H_
+#define __INC_DAC_H_
+
+/* C++ detection */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Includes */
 #include "stm32f4xx.h"
-#include "nvic.h"
-#include "SysTick.h"
-#include "gpio.h"
-#include "exti.h"
-#include "dac.h"
 
 /**
  * @addtogroup stm32_examples
@@ -38,22 +42,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main
- * @brief
+ * @addtogroup dac
  * @{
  */
 
 /**
- * @defgroup main_private_typedefs
- * @{
- */
-
-/**
- * @}
- */
-
-/**
- * @defgroup main_private_defines
+ * @defgroup dac_exported_typedefs
  * @{
  */
 
@@ -62,7 +56,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_macros
+ * @defgroup dac_exported_defines
  * @{
  */
 
@@ -71,7 +65,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_constants
+ * @defgroup dac_exported_macros
  * @{
  */
 
@@ -80,7 +74,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_variables
+ * @defgroup dac_exported_constants
  * @{
  */
 
@@ -89,61 +83,25 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_function_prototypes
+ * @defgroup dac_exported_functions
  * @{
  */
+void DAC_Config(void);
+void DAC_PB_Callback(void);
 
 /**
  * @}
  */
-
 /**
- * @defgroup main_private_functions
- * @{
+ * @}
  */
-
 /**
  * @}
  */
 
-/**
- * @defgroup main_exported_functions
- * @{
- */
-
-/**
- * @brief   Main function
- * @note
- * @param   none
- * @retval  none
- */
-int main(void)
-{
-  /* Disable SysTick, so we do not get interrupted */
-  SysTick_Init();
-  NVIC_Init();
-  GPIO_Init_LED(EVAL_ALL_LEDs);
-  GPIO_Init_PB();
-  EXTI_Init_PB();
-
-  DAC_Config();
-
-  /* Clear PRIMASK, enable IRQs */
-  __enable_irq();
-
-  /* Infinite loop */
-  while(1)
-  {
-
-  }
+/* C++ detection */
+#ifdef __cplusplus
 }
+#endif
 
-/**
- * @}
- */
-/**
- * @}
- */
-/**
- * @}
- */
+#endif /*__INC_DAC_H_ */

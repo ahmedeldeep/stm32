@@ -41,6 +41,7 @@
 #include "lpwr.h"
 #include "L3GD20.h"
 #include "adc.h"
+#include "dac.h"
 
 /** @addtogroup Template_Project
   * @{
@@ -169,7 +170,7 @@ void SysTick_Handler(void)
   */
 void EXTI0_IRQHandler(void)
 {
-  LPWR_PB_IRQ_Callback();
+  DAC_PB_Callback();
 }
 
 /**
