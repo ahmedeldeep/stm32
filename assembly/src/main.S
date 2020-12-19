@@ -5,6 +5,8 @@
 .fpu softvfp
 .thumb
 
+#include "arithmetic_logical_examples.S"
+
 .global Reset_Handler
 
 /* Define vector section, to be first thing in the image */
@@ -23,8 +25,9 @@ g_pfnVectors:
 
 Reset_Handler:
 
-    bl move_examples
-    bl memory_access_examples
+    bl add_two_64_bits
+    bl matrix_add
+    bl count_ones
 
     b Reset_Handler
 
