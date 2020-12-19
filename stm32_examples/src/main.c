@@ -26,10 +26,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* Includes */
 #include "stm32f4xx.h"
-#include "nvic.h"
-#include "SysTick.h"
 #include "gpio.h"
-#include "wdg.h"
+
+#include "rtos.h"
+
+
 
 /**
  * @addtogroup stm32_examples
@@ -83,6 +84,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  * @{
  */
 
+static RTOS_thread_t thread1;
+static RTOS_stack_t thread1stack;
+static RTOS_thread_t thread2;
+static RTOS_stack_t thread2stack;
+
 /**
  * @}
  */
@@ -100,7 +106,41 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  * @defgroup main_private_functions
  * @{
  */
+/**
+ * @brief   thread1function
+ * @note
+ * @param   none
+ * @retval  none
+ */
+void thread1function(void)
+{
+  while(1)
+  {
+    GPIO_Toggle_LED(EVAL_GREEN_LED);
 
+    for (int var = 0; var < 1000000; ++var)
+    {
+    }
+  }
+}
+/**
+ * @brief   thread2function
+ * @note
+ * @param   none
+ * @retval  none
+ */
+void thread2function(void)
+{
+
+  while(1)
+  {
+    GPIO_Toggle_LED(EVAL_RED_LED);
+
+    for (int var = 0; var < 1000000; ++var)
+    {
+    }
+  }
+}
 /**
  * @}
  */
@@ -118,24 +158,20 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 int main(void)
 {
-  SysTick_Init();
-  NVIC_Init();
   GPIO_Init_LED(EVAL_ALL_LEDs);
 
-  IWDG_Init();
-  WWDG_Init();
 
-  /* Clear PRIMASK, enable IRQs */
-  __enable_irq();
+  RTOS_init();
 
-  IWDG_Start();
-  WWDG_Start();
+  RTOS_SVC_threadCreate(&thread1, &thread1stack, 1, thread1function);
+  RTOS_SVC_threadCreate(&thread2, &thread2stack, 1, thread2function);
+
+  RTOS_SVC_schedulerStart();
 
   /* Infinite loop */
   while(1)
   {
-    IWDG_Refresh();
-    WWDG_Refresh();
+
   }
 
 }

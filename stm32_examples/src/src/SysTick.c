@@ -82,7 +82,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @brief   Variable to store millisecond ticks
  */
-volatile uint32_t SysTickCounter = 0;
+static volatile uint32_t SysTickCounter = 0;
 
 /**
  * @}
