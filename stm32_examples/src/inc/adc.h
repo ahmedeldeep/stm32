@@ -1,12 +1,12 @@
 /*******************************************************************************
- * @file    main.c
+ * @file    adc.h
  * @author  Ahmed Eldeep
  * @email   ahmed@almohandes.org
  * @website http://almohandes.org/stm32
- * @date    21.03.2018
- *          
- * @brief   main application called after startup
- * @note    
+ * @date    19.11.2018
+ *
+ * @brief   ADC Example
+ * @note
  *
 @verbatim
 Copyright (C) Almohandes.org, 2018
@@ -24,12 +24,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 @endverbatim
 *******************************************************************************/
 
+/* Define to prevent recursive inclusion */
+#ifndef __INC_ADC_H_
+#define __INC_ADC_H_
+
+/* C++ detection */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Includes */
 #include "stm32f4xx.h"
-#include "nvic.h"
-#include "SysTick.h"
-#include "gpio.h"
-#include "adc.h"
 
 /**
  * @addtogroup stm32_examples
@@ -37,22 +42,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main
- * @brief
+ * @addtogroup adc
  * @{
  */
 
 /**
- * @defgroup main_private_typedefs
- * @{
- */
-
-/**
- * @}
- */
-
-/**
- * @defgroup main_private_defines
+ * @defgroup adc_exported_typedefs
  * @{
  */
 
@@ -61,7 +56,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_macros
+ * @defgroup adc_exported_defines
  * @{
  */
 
@@ -70,7 +65,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_constants
+ * @defgroup adc_exported_macros
  * @{
  */
 
@@ -79,7 +74,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_variables
+ * @defgroup adc_exported_constants
  * @{
  */
 
@@ -88,59 +83,27 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_function_prototypes
+ * @defgroup adc_exported_functions
  * @{
  */
+
+void ADC1_Config(void);
+void ADC1_Main(void);
+void ADC_IRQ_Callback(void);
 
 /**
  * @}
  */
-
 /**
- * @defgroup main_private_functions
- * @{
+ * @}
  */
-
 /**
  * @}
  */
 
-/**
- * @defgroup main_exported_functions
- * @{
- */
-
-/**
- * @brief   Main function
- * @note
- * @param   none
- * @retval  none
- */
-int main(void)
-{
-  /* Disable SysTick, so we do not get interrupted */
-  SysTick_Init();
-  NVIC_Init();
-  GPIO_Init_LED(EVAL_ALL_LEDs);
-
-  /* Clear PRIMASK, enable IRQs */
-  __enable_irq();
-
-  ADC1_Config();
-
-  /* Infinite loop */
-  while(1)
-  {
-    ADC1_Main();
-  }
+/* C++ detection */
+#ifdef __cplusplus
 }
+#endif
 
-/**
- * @}
- */
-/**
- * @}
- */
-/**
- * @}
- */
+#endif /*__INC_ADC_H_ */

@@ -40,6 +40,7 @@
 #include "exti.h"
 #include "lpwr.h"
 #include "L3GD20.h"
+#include "adc.h"
 
 /** @addtogroup Template_Project
   * @{
@@ -331,6 +332,16 @@ void TIM8_UP_TIM13_IRQHandler(void)
 void TIM8_TRG_COM_TIM14_IRQHandler(void)
 {
   TIM8_IRQ_Callback();
+}
+
+/**
+  * @brief  This function handles ADC interrupt requests.
+  * @param  None
+  * @retval None
+  */
+void ADC_IRQHandler(void)
+{
+  ADC_IRQ_Callback();
 }
 
 /**

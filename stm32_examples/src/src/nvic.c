@@ -134,6 +134,7 @@ void NVIC_Init(void)
   NVIC_SetPriority(TIM4_IRQn, 1);
   NVIC_SetPriority(TIM8_UP_TIM13_IRQn, 1);
   NVIC_SetPriority(TIM8_TRG_COM_TIM14_IRQn, 1);
+  NVIC_SetPriority(ADC_IRQn, 1);
 
   /* Enable interrupts at NVIC */
   NVIC_EnableIRQ(EXTI0_IRQn);
@@ -149,6 +150,7 @@ void NVIC_Init(void)
   NVIC_EnableIRQ(TIM4_IRQn);
   NVIC_EnableIRQ(TIM8_UP_TIM13_IRQn);
   NVIC_EnableIRQ(TIM8_TRG_COM_TIM14_IRQn);
+  NVIC_EnableIRQ(ADC_IRQn);
 }
 
 /**
