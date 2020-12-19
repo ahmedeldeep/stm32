@@ -123,6 +123,13 @@ void RTOS_mutexCreate(RTOS_mutex_t * pMutex, uint32_t initialValue)
 
   /* Initialize mutex value */
   pMutex->mutexValue = initialValue;
+
+  #if(1 == USE_PRIORITY_INHERITANCE)
+  {
+    /* Initialize mutex holder */
+    pMutex->mutexHolder = NULL;
+  }
+  #endif
 }
 
 /**
@@ -161,6 +168,13 @@ RTOS_return_t RTOS_mutexLock(RTOS_mutex_t * pMutex, int32_t waitTime)
 
         /* Mutex is locked */
         returnStatus = RTOS_SUCCESS;
+
+        #if(1 == USE_PRIORITY_INHERITANCE)
+        {
+          /* Update mutex holder */
+          pMutex->mutexHolder = RTOS_threadGetRunning();
+        }
+        #endif
 
         /* Mutex lock succeeded, terminate the loop */
         terminate = 1;
@@ -202,6 +216,13 @@ RTOS_return_t RTOS_mutexLock(RTOS_mutex_t * pMutex, int32_t waitTime)
     {
       /* Thread will wait indefinitely, do nothing */
     }
+
+    #if(1 == USE_PRIORITY_INHERITANCE)
+    {
+      /* Inherit the priority for the mutex holder */
+      RTOS_threadPriorityInherit(pMutex->mutexHolder);
+    }
+    #endif
 
     /* Return to SVC as indication of context switching */
     returnStatus = RTOS_CONTEXT_SWITCH_TRIGGERED;
@@ -265,6 +286,16 @@ void RTOS_mutexRelease(RTOS_mutex_t * pMutex)
   {
     /* No threads are waiting, do nothing */
   }
+
+  #if(1 == USE_PRIORITY_INHERITANCE)
+  {
+    /* Disinherit the priority for the current thread */
+    RTOS_threadPriorityDisinherit();
+
+    /* Update mutex holder */
+    pMutex->mutexHolder = NULL;
+  }
+  #endif
 }
 
 /**

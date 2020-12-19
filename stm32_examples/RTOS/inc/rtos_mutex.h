@@ -58,6 +58,9 @@ extern "C" {
 typedef struct
 {
   uint32_t mutexValue;            /**< Mutex value */
+  #if (1 == USE_PRIORITY_INHERITANCE)
+    RTOS_thread_t * mutexHolder;  /**< Thread currently holding the mutex */
+  #endif
   RTOS_list_t waitingList;        /**< Waiting list of the mutex */
 } RTOS_mutex_t;
 

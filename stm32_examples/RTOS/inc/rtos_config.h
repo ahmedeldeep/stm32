@@ -80,6 +80,15 @@ extern "C" {
  */
 #define SYS_TICK_RATE_HZ                     ((uint32_t) 1000u)
 
+/**
+ * @brief   Select using priority inheritance
+ */
+#define USE_PRIORITY_INHERITANCE             (0u)
+
+/**
+ * @brief   Select using set priority, used for priority ceiling
+ */
+#define USE_PRIORITY_SET                     (1u)
 
 /**
  * @}

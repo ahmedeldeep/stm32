@@ -22,6 +22,8 @@
 .global RTOS_SVC_threadDelay
 .global RTOS_SVC_threadDestroy
 
+.global RTOS_SVC_threadPrioritySet
+
 .text
 
 .type RTOS_SVC_schedulerStart, %function
@@ -87,4 +89,9 @@ RTOS_SVC_threadDelay:
 .type RTOS_SVC_threadDestroy, %function
 RTOS_SVC_threadDestroy:
     svc 12
+    bx lr
+
+    .type RTOS_SVC_threadPrioritySet, %function
+RTOS_SVC_threadPrioritySet:
+    svc 13
     bx lr

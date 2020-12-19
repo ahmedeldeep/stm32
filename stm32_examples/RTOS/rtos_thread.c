@@ -195,6 +195,13 @@ void RTOS_threadCreate(RTOS_thread_t * pThread, RTOS_stack_t * pStack,
   /* Set thread priority */
   pThread->priority = priority;
 
+  #if(1 == USE_PRIORITY_INHERITANCE)
+  {
+    /* Set thread original priority */
+    pThread->originalPriority = priority;
+  }
+  #endif
+
   /* Increment number of threads and set the thread ID */
   if(0 == pThread->threadID)
   {
@@ -219,6 +226,7 @@ void RTOS_threadCreate(RTOS_thread_t * pThread, RTOS_stack_t * pStack,
    * items by priority in synchronization events list, for the generic lists
    * e.g. timer list, items are ordered with the timeout value */
   pThread->eventListItem.itemValue = priority;
+  pThread->genericListItem.itemValue = 0;
 
   /* Add new thread to ready list */
   RTOS_threadAddToReadyList(pThread);
@@ -324,7 +332,7 @@ void RTOS_threadSwitchRunning(void)
 /**
  * @brief   Add thread to the ready list
  * @note
- * @param   None
+ * @param   RTOS_thread_t *
  * @retval  None
  */
 void RTOS_threadAddToReadyList(RTOS_thread_t * pThread)
@@ -464,6 +472,168 @@ void RTOS_threadAddRunningToTimerList(uint32_t waitTime)
   /* Trigger context switch, set PendSV to pending */
   SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
 }
+
+/**
+ * @brief   Priority inherit
+ * @note    Gives the passed thread the priority of the current thread
+ * @param   RTOS_thread_t *
+ * @retval  None
+ */
+#if (1 == USE_PRIORITY_INHERITANCE)
+void RTOS_threadPriorityInherit(RTOS_thread_t * pThread)
+{
+  /* Check input parameters */
+  ASSERT(NULL != pThread);
+
+  /* Check if the passed thread has higher priority that the running thread */
+  if(pThread->priority > pRunningThread->priority)
+  {
+    /* Passed thread has priority lower than the current thread,
+     * do priority inheritance */
+    /* Update event list item value */
+    pThread->eventListItem.itemValue = pRunningThread->priority;
+
+    /* Check if the passed thread in the ready list,
+     * it will be removed and added again */
+    if((void *) &readyList[pThread->priority] == pThread->genericListItem.pList)
+    {
+      /* Remove from the ready list */
+      RTOS_listRemove(&pThread->genericListItem);
+
+      /* Update thread priority */
+      pThread->priority = pRunningThread->priority;
+
+      /* Added to the ready list */
+      RTOS_threadAddToReadyList(pThread);
+    }
+    else
+    {
+      /* Passed thread is not in the ready state, only update the priority */
+      pThread->priority = pRunningThread->priority;
+    }
+  }
+  else
+  {
+    /* Do nothing, passed thread has priority higher than or equal to
+     * the current thread */
+  }
+}
+#endif
+
+/**
+ * @brief   Priority disinherit
+ * @note    Restores the original priority of the current thread
+ * @param   None
+ * @retval  None
+ */
+#if (1 == USE_PRIORITY_INHERITANCE)
+void RTOS_threadPriorityDisinherit(void)
+{
+  /* Check current priority */
+  if(pRunningThread->priority != pRunningThread->originalPriority)
+  {
+    /* Remove from the ready list */
+    RTOS_listRemove(&pRunningThread->genericListItem);
+
+    /* Update thread priority */
+    pRunningThread->priority = pRunningThread->originalPriority;
+
+    /* Update event list item value */
+    pRunningThread->eventListItem.itemValue = pRunningThread->originalPriority;
+
+    /* Added to the ready list */
+    RTOS_threadAddToReadyList(pRunningThread);
+  }
+  else
+  {
+    /* Do nothing */
+  }
+}
+#endif
+
+/**
+ * @brief   Sets the priority of the running thread
+ * @note    Used for priority ceiling
+ * @param   None
+ * @retval  None
+ */
+#if (1 == USE_PRIORITY_SET)
+void RTOS_threadPrioritySet(uint32_t newPriority)
+{
+  /* Check input parameters */
+  ASSERT(THREAD_PRIORITY_LEVELS > newPriority);
+
+  /* Get running thread priority */
+  uint32_t runningThreadPriority;
+
+  /* Read priority */
+  #if (1 == USE_PRIORITY_INHERITANCE)
+  {
+    runningThreadPriority = pRunningThread->originalPriority;
+  }
+  #else
+  {
+    /* No priority inheritance */
+    runningThreadPriority = pRunningThread->priority;
+  }
+  #endif
+
+  /* Compare new priority with the current priority */
+  if(newPriority != runningThreadPriority)
+  {
+    /* The new priority is lower */
+    if(newPriority > runningThreadPriority)
+    {
+      /* Can make other thread able to run, trigger context switch,
+       * set PendSV to pending */
+      SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
+    }
+    else
+    {
+      /* When increasing the priority, no need to trigger context
+       * switch because the running thread is always the highest priority
+       * ready thread  */
+    }
+
+    /* Now change the priority */
+    #if (1 == USE_PRIORITY_INHERITANCE)
+    {
+      /* No information if the thread inherited the priority */
+      if(pRunningThread->originalPriority == pRunningThread->priority)
+      {
+        /* No inheritance */
+        pRunningThread->priority = newPriority;
+      }
+      else
+      {
+        /* Do nothing */
+      }
+
+      /* Change the original priority */
+      pRunningThread->originalPriority = newPriority;
+    }
+    #else
+    {
+      /* No priority inheritance */
+      pRunningThread->priority = newPriority;
+    }
+    #endif
+
+    /* Set event list item value */
+    pRunningThread->eventListItem.itemValue = newPriority;
+
+    /* Remove the running thread from ready list*/
+    RTOS_listRemove(&pRunningThread->genericListItem);
+
+    /* Added to the ready list */
+    RTOS_threadAddToReadyList(pRunningThread);
+  }
+  else
+  {
+    /* Do nothing, it has the same priority */
+  }
+}
+#endif
 
 /**
  * @}

@@ -328,6 +328,13 @@ void RTOS_SVC_Handler_main(uint32_t * svc_args)
       RTOS_threadDestroy((RTOS_thread_t *) svc_args[0]);
     break;
 
+    case 13:
+      #if (1 == USE_PRIORITY_SET)
+        RTOS_threadPrioritySet((uint32_t) svc_args[0]);
+      #endif
+    break;
+
+
     default:
       /* Not supported svc call */
       ASSERT(0);

@@ -96,10 +96,6 @@ static RTOS_stack_t thread4stack;
 
 static RTOS_mutex_t mutex1;
 
-static RTOS_semaphore_t semaphore1;
-
-static RTOS_mailbox_t mailbox1;
-static uint32_t mailbox1buffer[3];
 
 /**
  * @}
@@ -134,20 +130,15 @@ static void thread1function(void)
 
   while(1)
   {
-    if(RTOS_SUCCESS == RTOS_SVC_mutexLock(&mutex1, 10))
-    {
-      ITM_Printf("Thread 1: Mutex lock succeeded \n");
-      RTOS_SVC_threadDelay(15);
-      RTOS_SVC_mutexRelease(&mutex1);
-    }
-    else
-    {
-      ITM_Printf("Thread 1: Mutex lock failed \n");
-    }
+    RTOS_SVC_threadDelay(5);
 
-    RTOS_SVC_threadCreate(&thread4, &thread4stack, 1, thread4function);
-    RTOS_SVC_threadDelay(1);
-    RTOS_SVC_threadDestroy(&thread4);
+    ITM_Printf("Thread 1: wants to lock mutex1 \n");
+
+    RTOS_SVC_mutexLock(&mutex1, WAIT_INDEFINITELY);
+
+    ITM_Printf("Thread 1: Mutex lock succeeded \n");
+
+    RTOS_SVC_mutexRelease(&mutex1);
   }
 }
 
@@ -162,18 +153,12 @@ static void thread2function(void)
 
   while(1)
   {
-    if(RTOS_SUCCESS == RTOS_SVC_mutexLock(&mutex1, 10))
+    ITM_Printf("Thread 2: started \n");
+    for (int var = 0; var < 100000; ++var)
     {
-      ITM_Printf("Thread 2: Mutex lock succeeded \n");
-      RTOS_SVC_threadDelay(15);
-      RTOS_SVC_mutexRelease(&mutex1);
-    }
-    else
-    {
-      ITM_Printf("Thread 2: Mutex lock failed \n");
-    }
 
-    RTOS_SVC_threadDelay(1);
+    }
+    RTOS_SVC_threadDelay(50);
   }
 }
 
@@ -188,18 +173,12 @@ static void thread3function(void)
 
   while(1)
   {
-    if(RTOS_SUCCESS == RTOS_SVC_mutexLock(&mutex1, 10))
+    ITM_Printf("Thread 3: started \n");
+    for (int var = 0; var < 100000; ++var)
     {
-      ITM_Printf("Thread 3: Mutex lock succeeded \n");
-      RTOS_SVC_threadDelay(15);
-      RTOS_SVC_mutexRelease(&mutex1);
-    }
-    else
-    {
-      ITM_Printf("Thread 3: Mutex lock failed \n");
-    }
 
-    RTOS_SVC_threadDelay(1);
+    }
+    RTOS_SVC_threadDelay(50);
   }
 }
 
@@ -212,10 +191,23 @@ static void thread3function(void)
 static void thread4function(void)
 {
 
-  ITM_Printf("Thread 4: Started \n");
-
   while(1)
   {
+
+    RTOS_SVC_threadPrioritySet(1);
+    RTOS_SVC_mutexLock(&mutex1, WAIT_INDEFINITELY);
+    ITM_Printf("Thread 4: started to work with mutex1 \n");
+
+    for (int var = 0; var < 1000000; ++var)
+    {
+
+    }
+
+    ITM_Printf("Thread 4: finished work with mutex1 \n");
+    RTOS_SVC_mutexRelease(&mutex1);
+    RTOS_SVC_threadPrioritySet(3);
+
+    RTOS_SVC_threadDelay(5);
 
   }
 }
@@ -241,13 +233,12 @@ int main(void)
   RTOS_init();
 
   RTOS_SVC_threadCreate(&thread1, &thread1stack, 1, thread1function);
-  RTOS_SVC_threadCreate(&thread2, &thread2stack, 1, thread2function);
-  RTOS_SVC_threadCreate(&thread3, &thread3stack, 1, thread3function);
+  RTOS_SVC_threadCreate(&thread2, &thread2stack, 2, thread2function);
+  RTOS_SVC_threadCreate(&thread3, &thread3stack, 2, thread3function);
+  RTOS_SVC_threadCreate(&thread4, &thread4stack, 3, thread4function);
 
 
   RTOS_SVC_mutexCreate(&mutex1, 1);
-  RTOS_SVC_semaphoreCreate(&semaphore1, 1);
-  RTOS_SVC_mailboxCreate(&mailbox1, mailbox1buffer, 2, 4);
 
 
   RTOS_SVC_schedulerStart();

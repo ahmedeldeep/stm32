@@ -62,6 +62,9 @@ typedef struct thread_t
   uint32_t threadID;               /**< Used for trace */
   RTOS_listItem_t genericListItem; /**< Generic list item of this thread */
   RTOS_listItem_t eventListItem;   /**< Event list item of this thread */
+  #if (1 == USE_PRIORITY_INHERITANCE)
+    uint32_t originalPriority;     /**< Thread original priority */
+  #endif
 } RTOS_thread_t;
 
 /**
@@ -126,6 +129,12 @@ void RTOS_SVC_threadDelay(uint32_t waitTime);
 
 void RTOS_threadDestroy(RTOS_thread_t * pThread);
 void RTOS_SVC_threadDestroy(RTOS_thread_t * pThread);
+
+void RTOS_threadPriorityInherit(RTOS_thread_t * pThread);
+void RTOS_threadPriorityDisinherit(void);
+
+void RTOS_threadPrioritySet(uint32_t newPriority);
+void RTOS_SVC_threadPrioritySet(uint32_t newPriority);
 
 /**
  * @}
