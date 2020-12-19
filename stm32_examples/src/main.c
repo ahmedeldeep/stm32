@@ -29,7 +29,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "nvic.h"
 #include "SysTick.h"
 #include "gpio.h"
-#include "mpu.h"
+#include "crc.h"
 
 /**
  * @addtogroup stm32_examples
@@ -125,19 +125,24 @@ int main(void)
   /* Clear PRIMASK, enable IRQs */
   __enable_irq();
 
-  MPU_Init();
+  CRC_Init();
 
-  /* Enable port A clock */
-  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
+  uint8_t byte_array[8] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88};
+  uint32_t word_array[2] = {0x11223344, 0x55667788};
+
+  uint32_t crc = 0;
+  uint32_t crc_lookup = 0;
+  uint32_t crc_hw = 0;
+
+  crc = CRC_CalculateCRC32(byte_array, sizeof(byte_array));
+  crc_lookup = CRC_CalculateCRC32_Lookup(byte_array, sizeof(byte_array));
+
+  crc_hw = CRC_CalculateCRC32_HW(word_array, sizeof(word_array)/4);
 
   /* Infinite loop */
   while(1)
   {
-    GPIO_TurnON_LED(EVAL_GREEN_LED);
-    SysTick_Delay(500);
 
-    GPIO_TurnOFF_LED(EVAL_GREEN_LED);
-    SysTick_Delay(500);
   }
 
 }
