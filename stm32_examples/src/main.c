@@ -29,7 +29,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "nvic.h"
 #include "SysTick.h"
 #include "gpio.h"
-#include "crc.h"
+#include "wdg.h"
 
 /**
  * @addtogroup stm32_examples
@@ -122,27 +122,20 @@ int main(void)
   NVIC_Init();
   GPIO_Init_LED(EVAL_ALL_LEDs);
 
+  IWDG_Init();
+  WWDG_Init();
+
   /* Clear PRIMASK, enable IRQs */
   __enable_irq();
 
-  CRC_Init();
-
-  uint8_t byte_array[8] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88};
-  uint32_t word_array[2] = {0x11223344, 0x55667788};
-
-  uint32_t crc = 0;
-  uint32_t crc_lookup = 0;
-  uint32_t crc_hw = 0;
-
-  crc = CRC_CalculateCRC32(byte_array, sizeof(byte_array));
-  crc_lookup = CRC_CalculateCRC32_Lookup(byte_array, sizeof(byte_array));
-
-  crc_hw = CRC_CalculateCRC32_HW(word_array, sizeof(word_array)/4);
+  IWDG_Start();
+  WWDG_Start();
 
   /* Infinite loop */
   while(1)
   {
-
+    IWDG_Refresh();
+    WWDG_Refresh();
   }
 
 }

@@ -157,6 +157,8 @@ void NVIC_Init(void)
   NVIC_EnableIRQ(TIM8_UP_TIM13_IRQn);
   NVIC_EnableIRQ(TIM8_TRG_COM_TIM14_IRQn);
   NVIC_EnableIRQ(ADC_IRQn);
+  NVIC_EnableIRQ(PendSV_IRQn);
+  NVIC_EnableIRQ(SVCall_IRQn);
 }
 
 /**
