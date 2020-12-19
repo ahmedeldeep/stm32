@@ -1,11 +1,11 @@
 /*******************************************************************************
- * @file    rtos_mutex.h
+ * @file    can.h
  * @author  Ahmed Eldeep
  * @email   ahmed@almohandes.org
  * @website http://almohandes.org/stm32
- * @date    21 Jul 2019
+ * @date    30 Oct 2019
  *
- * @brief   RTOS Mutex
+ * @brief   CAN Example
  * @note
  *
 @verbatim
@@ -25,8 +25,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
 
 /* Define to prevent recursive inclusion */
-#ifndef __INC_RTOS_MUTEX_H_
-#define __INC_RTOS_MUTEX_H_
+#ifndef __INC_CAN_H_
+#define __INC_CAN_H_
 
 /* C++ detection */
 #ifdef __cplusplus
@@ -34,6 +34,7 @@ extern "C" {
 #endif
 
 /* Includes */
+#include "stm32f4xx.h"
 
 /**
  * @addtogroup stm32_examples
@@ -41,35 +42,12 @@ extern "C" {
  */
 
 /**
- * @addtogroup rtos_mutex
+ * @addtogroup can
  * @{
  */
 
 /**
- * @defgroup rtos_mutex_exported_typedefs
- * @{
- */
-
-/**
- * @brief      Mutex type
- * @note
- * @see
- */
-typedef struct
-{
-  uint32_t mutexValue;            /**< Mutex value */
-  #if(1 == USE_PRIORITY_INHERITANCE)
-    RTOS_thread_t * mutexHolder;  /**< Thread currently holding the mutex */
-  #endif
-  RTOS_list_t waitingList;        /**< Waiting list of the mutex */
-} RTOS_mutex_t;
-
-/**
- * @}
- */
-
-/**
- * @defgroup rtos_mutex_exported_defines
+ * @defgroup can_exported_typedefs
  * @{
  */
 
@@ -78,7 +56,7 @@ typedef struct
  */
 
 /**
- * @defgroup rtos_mutex_exported_macros
+ * @defgroup can_exported_defines
  * @{
  */
 
@@ -87,7 +65,7 @@ typedef struct
  */
 
 /**
- * @defgroup rtos_mutex_exported_constants
+ * @defgroup can_exported_macros
  * @{
  */
 
@@ -96,18 +74,22 @@ typedef struct
  */
 
 /**
- * @defgroup rtos_mutex_exported_functions
+ * @defgroup can_exported_constants
  * @{
  */
 
-void RTOS_mutexCreate(RTOS_mutex_t * pMutex, uint32_t initialValue);
-void RTOS_SVC_mutexCreate(RTOS_mutex_t * pMutex, uint32_t initialValue);
+/**
+ * @}
+ */
 
-RTOS_return_t RTOS_mutexLock(RTOS_mutex_t * pMutex, int32_t waitTime);
-RTOS_return_t RTOS_SVC_mutexLock(RTOS_mutex_t * pMutex, int32_t waitTime);
+/**
+ * @defgroup can_exported_functions
+ * @{
+ */
 
-void RTOS_mutexRelease(RTOS_mutex_t * pMutex);
-void RTOS_SVC_mutexRelease(RTOS_mutex_t * pMutex);
+void CAN1_Init(void);
+void CAN1_Transmit(void);
+void CAN1_Receive(void);
 
 /**
  * @}
@@ -124,4 +106,4 @@ void RTOS_SVC_mutexRelease(RTOS_mutex_t * pMutex);
 }
 #endif
 
-#endif /*__INC_RTOS_MUTEX_H_ */
+#endif /*__INC_CAN_H_ */

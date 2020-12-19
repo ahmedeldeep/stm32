@@ -62,7 +62,7 @@ typedef struct thread_t
   uint32_t threadID;               /**< Used for trace */
   RTOS_listItem_t genericListItem; /**< Generic list item of this thread */
   RTOS_listItem_t eventListItem;   /**< Event list item of this thread */
-  #if (1 == USE_PRIORITY_INHERITANCE)
+  #if(1 == USE_PRIORITY_INHERITANCE)
     uint32_t originalPriority;     /**< Thread original priority */
   #endif
 } RTOS_thread_t;

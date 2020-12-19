@@ -329,7 +329,7 @@ void RTOS_SVC_Handler_main(uint32_t * svc_args)
     break;
 
     case 13:
-      #if (1 == USE_PRIORITY_SET)
+      #if(1 == USE_PRIORITY_SET)
         RTOS_threadPrioritySet((uint32_t) svc_args[0]);
       #endif
     break;

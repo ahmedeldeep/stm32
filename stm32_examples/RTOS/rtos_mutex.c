@@ -153,9 +153,6 @@ RTOS_return_t RTOS_mutexLock(RTOS_mutex_t * pMutex, int32_t waitTime)
   /* Variable to terminate the while loop */
   uint32_t terminate = 0;
 
-  /* Get current running thread */
-  pRunningThread = RTOS_threadGetRunning();
-
   /* Try to lock the mutex */
   while(1 != terminate)
   {
@@ -197,6 +194,9 @@ RTOS_return_t RTOS_mutexLock(RTOS_mutex_t * pMutex, int32_t waitTime)
   /* Check waiting flag and return status */
   if((NO_WAIT != waitTime) && (RTOS_SUCCESS != returnStatus))
   {
+    /* Get current running thread */
+    pRunningThread = RTOS_threadGetRunning();
+
     /* Remove current thread from ready list */
     RTOS_listRemove(&pRunningThread->genericListItem);
 

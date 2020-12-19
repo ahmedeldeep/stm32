@@ -26,11 +26,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* Includes */
 #include "stm32f4xx.h"
-#include "gpio.h"
-#include "itm.h"
-
 #include "rtos.h"
 
+#include "gpio.h"
+#include "can.h"
 
 
 /**
@@ -87,16 +86,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 static RTOS_thread_t thread1;
 static RTOS_stack_t thread1stack;
+
 static RTOS_thread_t thread2;
 static RTOS_stack_t thread2stack;
-static RTOS_thread_t thread3;
-static RTOS_stack_t thread3stack;
-static RTOS_thread_t thread4;
-static RTOS_stack_t thread4stack;
 
-static RTOS_mutex_t mutex1;
-static RTOS_mutex_t mutex2;
-static RTOS_mutex_t mutex3;
 
 
 /**
@@ -110,8 +103,6 @@ static RTOS_mutex_t mutex3;
 
 static void thread1function(void);
 static void thread2function(void);
-static void thread3function(void);
-static void thread4function(void);
 
 /**
  * @}
@@ -129,28 +120,11 @@ static void thread4function(void);
  */
 static void thread1function(void)
 {
+
   while(1)
   {
-    RTOS_SVC_threadDelay(1);
-
-    RTOS_SVC_mutexLock(&mutex1, WAIT_INDEFINITELY);
-
-    RTOS_SVC_threadDelay(2);
-
-
-    RTOS_SVC_mutexRelease(&mutex1);
-
-    RTOS_SVC_mutexLock(&mutex2, WAIT_INDEFINITELY);
-    RTOS_SVC_mutexLock(&mutex3, WAIT_INDEFINITELY);
-    RTOS_SVC_mutexLock(&mutex1, WAIT_INDEFINITELY);
-
-
-    RTOS_SVC_threadDelay(2);
-
-    RTOS_SVC_mutexRelease(&mutex1);
-    RTOS_SVC_mutexRelease(&mutex2);
-    RTOS_SVC_mutexRelease(&mutex3);
-
+    CAN1_Transmit();
+    RTOS_SVC_threadDelay(10);
   }
 }
 
@@ -162,56 +136,11 @@ static void thread1function(void)
  */
 static void thread2function(void)
 {
+
   while(1)
   {
-
-  }
-}
-
-/**
- * @brief   thread2function
- * @note
- * @param   none
- * @retval  none
- */
-static void thread3function(void)
-{
-  while(1)
-  {
-
-  }
-}
-
-/**
- * @brief   thread2function
- * @note
- * @param   none
- * @retval  none
- */
-static void thread4function(void)
-{
-  while(1)
-  {
-
-    RTOS_SVC_mutexLock(&mutex2, WAIT_INDEFINITELY);
-    RTOS_SVC_mutexLock(&mutex3, WAIT_INDEFINITELY);
-
-    RTOS_SVC_threadDelay(2);
-
-    RTOS_SVC_mutexRelease(&mutex2);
-    RTOS_SVC_mutexRelease(&mutex3);
-
-    RTOS_SVC_mutexLock(&mutex1, WAIT_INDEFINITELY);
-    RTOS_SVC_mutexLock(&mutex2, WAIT_INDEFINITELY);
-    RTOS_SVC_mutexLock(&mutex3, WAIT_INDEFINITELY);
-
-
-    RTOS_SVC_threadDelay(2);
-
-    RTOS_SVC_mutexRelease(&mutex1);
-    RTOS_SVC_mutexRelease(&mutex2);
-    RTOS_SVC_mutexRelease(&mutex3);
-
+    CAN1_Receive();
+    RTOS_SVC_threadDelay(1);
   }
 }
 
@@ -233,18 +162,12 @@ static void thread4function(void)
 int main(void)
 {
   GPIO_Init_LED(EVAL_ALL_LEDs);
+  CAN1_Init();
+
   RTOS_init();
 
   RTOS_SVC_threadCreate(&thread1, &thread1stack, 1, thread1function);
-  RTOS_SVC_threadCreate(&thread2, &thread2stack, 5, thread2function);
-  RTOS_SVC_threadCreate(&thread3, &thread3stack, 5, thread3function);
-  RTOS_SVC_threadCreate(&thread4, &thread4stack, 1, thread4function);
-
-
-  RTOS_SVC_mutexCreate(&mutex1, 1);
-  RTOS_SVC_mutexCreate(&mutex2, 1);
-  RTOS_SVC_mutexCreate(&mutex3, 1);
-
+  RTOS_SVC_threadCreate(&thread2, &thread2stack, 1, thread2function);
 
   RTOS_SVC_schedulerStart();
 

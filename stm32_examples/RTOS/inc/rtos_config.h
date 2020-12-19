@@ -83,12 +83,12 @@ extern "C" {
 /**
  * @brief   Select using priority inheritance
  */
-#define USE_PRIORITY_INHERITANCE             (0u)
+#define USE_PRIORITY_INHERITANCE             (1u)
 
 /**
  * @brief   Select using set priority, used for priority ceiling
  */
-#define USE_PRIORITY_SET                     (0u)
+#define USE_PRIORITY_SET                     (1u)
 
 /**
  * @}
