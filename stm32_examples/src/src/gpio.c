@@ -109,27 +109,32 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @brief   On-board LEDs initialization function
  * @note    EVAL_GREEN_LED -> PG13
- * @param   
- * @retval
+ *          EVAL_RED_LED -> PG14
+ * @param   Led_Type led
+ * @retval  None
  */
 void GPIO_Init_LED(Led_Type led)
 {
   /* Check LED type, please */
   switch (led)
   {
-    case EVAL_GREEN_LED:
+    case EVAL_ALL_LEDs:
 
       /* Enable port G clock */
       RCC->AHB1ENR |= RCC_AHB1ENR_GPIOGEN;
 
-      /* Select output mode */
-      GPIOG->MODER |= GPIO_MODER_MODER13_0;
+      /* Reset mode */
+      GPIOG->MODER &= ~(GPIO_MODER_MODER13 | GPIO_MODER_MODER14);
+
+      /* Select output mode for pin 13, pin 14 */
+      GPIOG->MODER |= GPIO_MODER_MODER13_0 | GPIO_MODER_MODER14_0;
 
       /* Select output type push-pull */
-      GPIOG->OTYPER &= ~(GPIO_OTYPER_OT_13);
+      GPIOG->OTYPER &= ~(GPIO_OTYPER_OT_13 | GPIO_OTYPER_OT_14);
 
       /* Select output speed very high */
-      GPIOG->OSPEEDR |= (GPIO_OSPEEDER_OSPEEDR13_0 | GPIO_OSPEEDER_OSPEEDR13_1);
+      GPIOG->OSPEEDR |= (GPIO_OSPEEDER_OSPEEDR13_0 | GPIO_OSPEEDER_OSPEEDR13_1
+          | GPIO_OSPEEDER_OSPEEDR14_0 | GPIO_OSPEEDER_OSPEEDR14_1);
 
       /* Enable SYSCFG clock */
       RCC->APB2ENR |= RCC_APB2LPENR_SYSCFGLPEN;
@@ -144,7 +149,7 @@ void GPIO_Init_LED(Led_Type led)
       }
 
       /* Select no pull */
-      GPIOG->PUPDR &= ~(GPIO_PUPDR_PUPDR13);
+      GPIOG->PUPDR &= ~(GPIO_PUPDR_PUPDR13 | GPIO_PUPDR_PUPDR14);
 
       break;
 
@@ -156,8 +161,9 @@ void GPIO_Init_LED(Led_Type led)
 /**
  * @brief   Turns on-board LED on
  * @note    EVAL_GREEN_LED -> PG13
+ *          EVAL_RED_LED -> PG14
  * @param   Led_Type led
- * @retval
+ * @retval  None
  */
 void GPIO_TurnON_LED(Led_Type led)
 {
@@ -165,6 +171,10 @@ void GPIO_TurnON_LED(Led_Type led)
   {
     case EVAL_GREEN_LED:
       GPIOG->BSRRL = GPIO_BSRR_BS_13;
+      break;
+
+    case EVAL_RED_LED:
+      GPIOG->BSRRL = GPIO_BSRR_BS_14;
       break;
 
     case EVAL_GREEN_LED_BITBAND:
@@ -179,8 +189,9 @@ void GPIO_TurnON_LED(Led_Type led)
 /**
  * @brief   Turns on-board LED off
  * @note    EVAL_GREEN_LED -> PG13
+ *          EVAL_RED_LED -> PG14
  * @param   Led_Type led
- * @retval
+ * @retval  None
  */
 void GPIO_TurnOFF_LED(Led_Type led)
 {
@@ -188,6 +199,10 @@ void GPIO_TurnOFF_LED(Led_Type led)
   {
     case EVAL_GREEN_LED:
       GPIOG->BSRRH = GPIO_BSRR_BS_13;
+      break;
+
+    case EVAL_RED_LED:
+      GPIOG->BSRRH = GPIO_BSRR_BS_14;
       break;
 
     case EVAL_GREEN_LED_BITBAND:

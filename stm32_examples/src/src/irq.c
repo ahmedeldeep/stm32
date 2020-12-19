@@ -1,11 +1,11 @@
 /*******************************************************************************
- * @file    main.c
+ * @file    irq.c
  * @author  Ahmed Eldeep
  * @email   ahmed@almohandes.org
  * @website http://almohandes.org/stm32
- * @date    21.03.2018
+ * @date    31.03.2018
  *          
- * @brief   main application called after startup
+ * @brief   Some IRQs examples using NVIC
  * @note    
  *
 @verbatim
@@ -25,8 +25,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
 
 /* Includes */
-#include "SysTick.h"
-#include "gpio.h"
 #include "irq.h"
 
 /**
@@ -35,13 +33,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main
+ * @defgroup irq
  * @brief
  * @{
  */
 
 /**
- * @defgroup main_private_typedefs
+ * @defgroup irq_private_typedefs
  * @{
  */
 
@@ -50,7 +48,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_defines
+ * @defgroup irq_private_defines
  * @{
  */
 
@@ -59,7 +57,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_macros
+ * @defgroup irq_private_macros
  * @{
  */
 
@@ -68,7 +66,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_constants
+ * @defgroup irq_private_constants
  * @{
  */
 
@@ -77,7 +75,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_variables
+ * @defgroup irq_private_variables
  * @{
  */
 
@@ -86,7 +84,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_function_prototypes
+ * @defgroup irq_private_function_prototypes
  * @{
  */
 
@@ -95,7 +93,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_functions
+ * @defgroup irq_private_functions
  * @{
  */
 
@@ -104,41 +102,36 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_exported_functions
+ * @defgroup irq_exported_functions
  * @{
  */
 
 /**
- * @brief   Main function
+ * @brief   NVIC IRQs initialization function
  * @note
- * @param   none
- * @retval  none
+ * @param   None
+ * @retval  None
  */
-int main(void)
+void IRQ_Init(void)
 {
-  SysTick_Init();
-  IRQ_Init();
-  GPIO_Init_LED(EVAL_ALL_LEDs);
+  /* Set priority group to 3
+   * bits[3:0] are the sub-priority,
+   * bits[7:4] are the pre-empt priority */
+  NVIC_SetPriorityGrouping(3);
 
-  /* Trigger LED ON interrupts */
-  NVIC_SetPendingIRQ(GREEN_LED_ON_IRQ);
+  /* Set priority levels */
+  NVIC_SetPriority(GREEN_LED_OFF_IRQ, 1);
+  NVIC_SetPriority(RED_LED_OFF_IRQ,   2);
 
-  /* Clear PRIMASK, enable IRQs */
-  __enable_irq();
+  NVIC_SetPriority(GREEN_LED_ON_IRQ,  3);
+  NVIC_SetPriority(RED_LED_ON_IRQ,    4);
 
-  /* Infinite loop */
-  while(1)
-  {
-//    /* Trigger LED ON interrupts */
-//    NVIC_SetPendingIRQ(GREEN_LED_ON_IRQ);
-//    NVIC_SetPendingIRQ(RED_LED_ON_IRQ);
-//    SysTick_Delay(300);
-//
-//    /* Trigger LED OFF interrupts */
-//    NVIC->STIR = GREEN_LED_OFF_IRQ;
-//    NVIC->STIR = RED_LED_OFF_IRQ;
-//    SysTick_Delay(700);
-  }
+  /* Enable interrupts at NVIC */
+  NVIC_EnableIRQ(GREEN_LED_OFF_IRQ);
+  NVIC_EnableIRQ(RED_LED_OFF_IRQ);
+
+  NVIC_EnableIRQ(GREEN_LED_ON_IRQ);
+  NVIC_EnableIRQ(RED_LED_ON_IRQ);
 }
 
 /**

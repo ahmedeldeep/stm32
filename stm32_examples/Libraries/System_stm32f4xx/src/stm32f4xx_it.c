@@ -30,6 +30,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_it.h"
 #include "SysTick.h"
+#include "gpio.h"
+#include "irq.h"
 
 /** @addtogroup Template_Project
   * @{
@@ -152,13 +154,52 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
-  * @brief  This function handles PPP interrupt request.
+  * @brief  This function handles EXTI0 interrupt request.
   * @param  None
   * @retval None
   */
-/*void PPP_IRQHandler(void)
+void EXTI0_IRQHandler(void)
 {
-}*/
+  GPIO_TurnON_LED(EVAL_GREEN_LED);
+  SysTick_Delay(500);
+  NVIC_SetPendingIRQ(GREEN_LED_OFF_IRQ);
+}
+
+/**
+  * @brief  This function handles EXTI1 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI1_IRQHandler(void)
+{
+  GPIO_TurnOFF_LED(EVAL_GREEN_LED);
+  SysTick_Delay(500);
+  NVIC_SetPendingIRQ(RED_LED_ON_IRQ);
+}
+
+/**
+  * @brief  This function handles EXTI2 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI2_IRQHandler(void)
+{
+  GPIO_TurnON_LED(EVAL_RED_LED);
+  SysTick_Delay(500);
+  NVIC_SetPendingIRQ(RED_LED_OFF_IRQ);
+}
+
+/**
+  * @brief  This function handles EXTI3 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI3_IRQHandler(void)
+{
+  GPIO_TurnOFF_LED(EVAL_RED_LED);
+  SysTick_Delay(500);
+  NVIC_SetPendingIRQ(GREEN_LED_ON_IRQ);
+}
 
 /**
   * @}

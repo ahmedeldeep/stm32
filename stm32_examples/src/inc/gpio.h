@@ -148,8 +148,8 @@ typedef enum
 /**
  * @brief   On-board LEDs initialization function
  * @note    EVAL_GREEN_LED -> PG13
- * @param
- * @retval
+ * @param   Led_Type led
+ * @retval  None
  */
 void GPIO_Init_LED(Led_Type led);
 
@@ -157,7 +157,7 @@ void GPIO_Init_LED(Led_Type led);
  * @brief   Turns on-board LED on
  * @note    EVAL_GREEN_LED -> PG13
  * @param   Led_Type led
- * @retval
+ * @retval  None
  */
 void GPIO_TurnON_LED(Led_Type led);
 
@@ -165,7 +165,7 @@ void GPIO_TurnON_LED(Led_Type led);
  * @brief   Turns on-board LED off
  * @note    EVAL_GREEN_LED -> PG13
  * @param   Led_Type led
- * @retval
+ * @retval  None
  */
 void GPIO_TurnOFF_LED(Led_Type led);
 

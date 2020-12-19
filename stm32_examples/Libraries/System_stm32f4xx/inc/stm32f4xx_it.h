@@ -53,6 +53,12 @@ void DebugMon_Handler(void);
 void PendSV_Handler(void);
 void SysTick_Handler(void);
 
+/* STM32F4xx Peripherals Interrupt Handlers */
+void EXTI0_IRQHandler(void);
+void EXTI1_IRQHandler(void);
+void EXTI2_IRQHandler(void);
+void EXTI3_IRQHandler(void);
+
 #ifdef __cplusplus
 }
 #endif

@@ -72,6 +72,9 @@ defined in linker script */
 Reset_Handler:  
   ldr   sp, =_estack    /* Atollic update: set stack pointer */
   
+  /* Disable interrupt (set PRIMASK) */
+  CPSID i
+
 /* Copy the data segment initializers from flash to SRAM */  
   movs  r1, #0
   b  LoopCopyDataInit
