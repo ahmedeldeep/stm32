@@ -122,6 +122,8 @@ void NVIC_Init(void)
   /* Set priority levels */
   NVIC_SetPriority(SysTick_IRQn, 0);
   NVIC_SetPriority(EXTI0_IRQn, 1);
+  NVIC_SetPriority(DMA1_Stream0_IRQn, 1);
+  NVIC_SetPriority(DMA1_Stream7_IRQn, 1);
   NVIC_SetPriority(DMA2_Stream0_IRQn, 1);
   NVIC_SetPriority(DMA2_Stream5_IRQn, 1);
   NVIC_SetPriority(DMA2_Stream7_IRQn, 1);
@@ -129,6 +131,8 @@ void NVIC_Init(void)
 
   /* Enable interrupts at NVIC */
   NVIC_EnableIRQ(EXTI0_IRQn);
+  NVIC_EnableIRQ(DMA1_Stream0_IRQn);
+  NVIC_EnableIRQ(DMA1_Stream7_IRQn);
   NVIC_EnableIRQ(DMA2_Stream0_IRQn);
   NVIC_EnableIRQ(DMA2_Stream5_IRQn);
   NVIC_EnableIRQ(DMA2_Stream7_IRQn);

@@ -33,6 +33,7 @@
 #include "SysTick.h"
 #include "gpio.h"
 #include "usart1.h"
+#include "DS18B20.h"
 
 /** @addtogroup Template_Project
   * @{
@@ -192,6 +193,26 @@ void EXTI2_IRQHandler(void)
 void EXTI3_IRQHandler(void)
 {
 
+}
+
+/**
+  * @brief  This function handles DMA1 Stream0 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void DMA1_Stream0_IRQHandler(void)
+{
+  UART5_RX_DMA_IRQ_Callback();
+}
+
+/**
+  * @brief  This function handles DMA1 Stream7 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void DMA1_Stream7_IRQHandler(void)
+{
+  UART5_TX_DMA_IRQ_Callback();
 }
 
 /**

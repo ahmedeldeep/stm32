@@ -29,6 +29,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "SysTick.h"
 #include "gpio.h"
 #include "usart1.h"
+#include "DS18B20.h"
 
 /**
  * @addtogroup stm32_examples
@@ -121,20 +122,20 @@ int main(void)
   GPIO_Init_LED(EVAL_ALL_LEDs);
   NVIC_Init();
 
-  USART1_GPIO_Config();
-  USART1_Init();
-  USART1_TX_DMA_Config();
-  USART1_RX_DMA_Config();
+  DS18B20_GPIO_Init();
+  DS18B20_UART5_Init();
+  DS18B20_TX_DMA_Init();
+  DS18B20_RX_DMA_Init();
 
   /* Clear PRIMASK, enable IRQs */
   __enable_irq();
 
-  USART1_Enable();
+  DS18B20_UART5_Enable();
 
   /* Infinite loop */
   while(1)
   {
-    USART1_Process();
+    DS18B20_Process();
   }
 }
 
