@@ -34,6 +34,7 @@
 #include "gpio.h"
 #include "usart1.h"
 #include "DS18B20.h"
+#include "LIN_Slave.h"
 
 /** @addtogroup Template_Project
   * @{
@@ -202,7 +203,7 @@ void EXTI3_IRQHandler(void)
   */
 void DMA1_Stream0_IRQHandler(void)
 {
-  UART5_RX_DMA_IRQ_Callback();
+  LIN_Slave_RX_DMA_IRQ_Callback();
 }
 
 /**
@@ -212,7 +213,7 @@ void DMA1_Stream0_IRQHandler(void)
   */
 void DMA1_Stream7_IRQHandler(void)
 {
-  UART5_TX_DMA_IRQ_Callback();
+  LIN_Slave_TX_DMA_IRQ_Callback();
 }
 
 /**
@@ -257,6 +258,7 @@ void DMA2_Stream7_IRQHandler(void)
 {
   USART1_TX_DMA_IRQ_Callback();
 }
+
 /**
   * @brief  This function handles USART1 interrupt request.
   * @param  None
@@ -265,6 +267,16 @@ void DMA2_Stream7_IRQHandler(void)
 void USART1_IRQHandler(void)
 {
   USART1_IRQ_Callback();
+}
+
+/**
+  * @brief  This function handles UART5 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void UART5_IRQHandler(void)
+{
+  LIN_Slave_UART5_IRQ_Callback();
 }
 
 

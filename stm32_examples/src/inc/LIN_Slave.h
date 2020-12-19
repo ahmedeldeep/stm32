@@ -1,12 +1,12 @@
 /*******************************************************************************
- * @file    main.c
+ * @file    LIN_Slave.h
  * @author  Ahmed Eldeep
  * @email   ahmed@almohandes.org
  * @website http://almohandes.org/stm32
- * @date    21.03.2018
- *          
- * @brief   main application called after startup
- * @note    
+ * @date    17.06.2018
+ *
+ * @brief   LIN slave node driver
+ * @note
  *
 @verbatim
 Copyright (C) Almohandes.org, 2018
@@ -24,11 +24,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 @endverbatim
 *******************************************************************************/
 
+/* Define to prevent recursive inclusion */
+#ifndef __INC_LIN_SLAVE_H_
+#define __INC_LIN_SLAVE_H_
+
+/* C++ detection */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Includes */
-#include "nvic.h"
-#include "SysTick.h"
-#include "gpio.h"
-#include "LIN_Slave.h"
+#include "stm32f4xx.h"
 
 /**
  * @addtogroup stm32_examples
@@ -36,22 +42,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main
- * @brief
+ * @addtogroup LIN_Slave
  * @{
  */
 
 /**
- * @defgroup main_private_typedefs
- * @{
- */
-
-/**
- * @}
- */
-
-/**
- * @defgroup main_private_defines
+ * @defgroup LIN_Slave_exported_typedefs
  * @{
  */
 
@@ -60,7 +56,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_macros
+ * @defgroup LIN_Slave_exported_defines
  * @{
  */
 
@@ -69,7 +65,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_constants
+ * @defgroup LIN_Slave_exported_macros
  * @{
  */
 
@@ -78,7 +74,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_variables
+ * @defgroup LIN_Slave_exported_constants
  * @{
  */
 
@@ -87,63 +83,34 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @defgroup main_private_function_prototypes
+ * @defgroup LIN_Slave_exported_functions
  * @{
  */
+
+void LIN_Slave_GPIO_Init(void);
+void LIN_Slave_UART5_Init(void);
+void LIN_Slave_TX_DMA_Init(void);
+void LIN_Slave_RX_DMA_Init(void);
+void LIN_Slave_Enable(void);
+void LIN_Slave_RX_DMA_IRQ_Callback(void);
+void LIN_Slave_TX_DMA_IRQ_Callback(void);
+void LIN_Slave_UART5_IRQ_Callback(void);
+void LIN_Slave_Process(void);
+
 
 /**
  * @}
  */
-
 /**
- * @defgroup main_private_functions
- * @{
+ * @}
  */
-
 /**
  * @}
  */
 
-/**
- * @defgroup main_exported_functions
- * @{
- */
-
-/**
- * @brief   Main function
- * @note
- * @param   none
- * @retval  none
- */
-int main(void)
-{
-  SysTick_Init();
-  GPIO_Init_LED(EVAL_ALL_LEDs);
-  NVIC_Init();
-
-  LIN_Slave_GPIO_Init();
-  LIN_Slave_UART5_Init();
-  LIN_Slave_TX_DMA_Init();
-  LIN_Slave_RX_DMA_Init();
-
-  /* Clear PRIMASK, enable IRQs */
-  __enable_irq();
-
-  LIN_Slave_Enable();
-
-  /* Infinite loop */
-  while(1)
-  {
-    LIN_Slave_Process();
-  }
+/* C++ detection */
+#ifdef __cplusplus
 }
+#endif
 
-/**
- * @}
- */
-/**
- * @}
- */
-/**
- * @}
- */
+#endif /*__INC_LIN_SLAVE_H_ */
